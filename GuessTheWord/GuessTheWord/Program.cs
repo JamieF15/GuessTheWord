@@ -4,9 +4,11 @@ namespace GuessTheWord
 {
     class Program
     {
+
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            GameSystem GS = new GameSystem();
+            GS.StartGame();
         }
     }
 }
