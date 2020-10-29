@@ -1,10 +1,8 @@
 {
   "version": 2,
-  "dgSpecHash": "v3MDQdZEcqVosboED7di+pIII1VLd/JOyVW+hIDdLrdRQcbWkBVCyS32hGFD1ug3J9Q57PTSmaDmCigP6F9dlg==",
+  "dgSpecHash": "9aQdoOrDaK/XpePuHVrFURbCgCXF1bArRN+ltdGEGBxrX3XgAIXPrn3E83AOsi3fcIqk1zJXVBzXC+BR1oTx/g==",
   "success": true,
   "projectFilePath": "C:\\Users\\User\\Documents\\Code For Github\\GuessTheWord\\GuessTheWord\\GuessTheWord.csproj",
-  "expectedPackageFiles": [
-    "C:\\Users\\User\\.nuget\\packages\\microsoft.aspnetcore.app.ref\\3.1.2\\microsoft.aspnetcore.app.ref.3.1.2.nupkg.sha512"
-  ],
+  "expectedPackageFiles": [],
   "logs": []
 }
