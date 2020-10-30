@@ -54,9 +54,13 @@ namespace GuessTheWord
         /// <returns>Returns the number of guesses for the player</returns>
         int PromptUserForNumberOfGuesses()
         {
+            //stops the loop
             bool stop = false;
+
+            //number of guesses for the user
             int numberOfGuesses = -1;
 
+            //loop until it returns a number
             while (!stop)
             {
                 Console.WriteLine("Enter the number of guesses you want: ");
@@ -135,11 +139,10 @@ namespace GuessTheWord
         {
             #region test
             WordManagement.WordLength = WordManagement.PromptUserForWordLength();
-            AI.CurentWordFamily = A;
             player.GuessesLeft = PromptUserForNumberOfGuesses();
             PromptUserForTotalOfWordsInList();
-            Console.WriteLine("AI word fam element 0 = " + AI.CurentWordFamily[0]);
             AI.ChosenWord.Append(WordManagement.AllWords[0]);
+            Console.WriteLine("AI word fam element 0 = " + AI.ChosenWord);
             #endregion
 
             lines.Append(WordManagement.BlankOutWord(AI.ChosenWord.Length));
@@ -158,8 +161,10 @@ namespace GuessTheWord
                 {
                     //write to the console that the guess was correct
                     Console.WriteLine("Guess Correct! :)\n");
+
                     //add the guess to the correct letters 
                     player.CorrectLetters.Add(Convert.ToChar(guess));
+
                     //add the guess to used letters
                     player.UsedLetters.Add(Convert.ToChar(guess));
 
@@ -196,7 +201,7 @@ namespace GuessTheWord
                     if (player.GuessesLeft == 0)
                     {
                         gameOver = true;
-                        Console.WriteLine("GAME OVER! You ran out of guesses.");
+                        Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.ChosenWord + "'");
                         Console.WriteLine("Press any key to exit.");
                         Console.ReadKey();
                     }

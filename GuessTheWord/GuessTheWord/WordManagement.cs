@@ -27,7 +27,12 @@ namespace GuessTheWord
             while (!stop)
             {
                 Console.WriteLine("Enter a word length: ");
-                WordLength = Convert.ToInt32(Console.ReadLine());
+                WordLength = Convert.ToInt32((Console.ReadLine().ToString()));
+               
+                if(string.IsNullOrEmpty(WordLength.ToString()));
+                {
+                    Console.WriteLine("Enter a number.");
+                }
 
                 if (CheckWordList(WordLength))
                 {

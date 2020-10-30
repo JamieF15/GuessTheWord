@@ -67,7 +67,7 @@ namespace GuessTheWord
                 //true if the guess is 1 character in length, is in the alphabet, and has not been used
                 if (guess.Length == 1 && AlphabetCheck && !usedLetter)
                 {
-                    //return the guess 
+                    //return the guess as lower case to allow for both uppercase and lower case to be valid
                     return guess.ToLower();
                 }
                 //Outputs for when a letter is incorrect
