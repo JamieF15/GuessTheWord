@@ -11,11 +11,71 @@ namespace GuessTheWord
         #region Objects
         public readonly AI AI = new AI();
         public readonly Player player = new Player();
-        public readonly WordManagement WM = new WordManagement();
         readonly StringBuilder lines = new StringBuilder();
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// Prompts the user if they want to see how many words they are to guess from before the game starts
+        /// </summary>
+        void PromptUserForTotalOfWordsInList()
+        {
+            string input;
+            bool stop = false;
+
+            while (!stop)
+            {
+                Console.WriteLine("Do you want to see the number of words in the list? y/n");
+                input = Console.ReadLine();
+
+                if (input.Length == 1 && input == "y" || input == "Y")
+                {
+                    if (AI.CurentWordFamily.Count == 1)
+                    {
+                        Console.WriteLine("There is " + AI.CurentWordFamily.Count + " word to guess from.");
+                    }
+                    else
+                    {
+                        Console.WriteLine("There are " + AI.CurentWordFamily.Count + " words to guess from.");
+                    }
+                    stop = true;
+                }
+                else if (input.Length == 1 && input == "n" || input == "N")
+                {
+                    stop = true;
+                } 
+            }
+        }
+
+        /// <summary>
+        /// Prompts the user for the number of guesses they want
+        /// </summary>
+        /// <returns>Returns the number of guesses for the player</returns>
+        int PromptUserForNumberOfGuesses()
+        {
+            bool stop = false;
+            int numberOfGuesses = -1;
+
+            while (!stop)
+            {
+                Console.WriteLine("Enter the number of guesses you want: ");
+                numberOfGuesses = Convert.ToInt32(Console.ReadLine());
+                if (numberOfGuesses > 0)
+                {
+                    return numberOfGuesses;
+                }
+                else
+                {
+                    Console.WriteLine("Gusses must be greater than 0.");
+                } 
+            }
+            return numberOfGuesses;
+        }
+
+        /// <summary>
+        /// Prints all of the used letters to the console
+        /// </summary>
         void PrintUsedLetters()
         {
             Console.Write("Used Letters: ");
@@ -26,12 +86,12 @@ namespace GuessTheWord
 
             for (int i = 0; i < player.UsedLetters.Count; i++)
             {
-
                 Console.Write(player.UsedLetters[i] + " ");
             }
 
             Console.WriteLine("");
         }
+
         /// <summary>
         /// Checks if the player has won based on the blanked out word
         /// </summary>
@@ -45,13 +105,14 @@ namespace GuessTheWord
             //loops through the lines stringbuilder and counts the dashes (-)
             for (int i = 0; i < lines.Length; i++)
             {
+                //if the subject element is a dash, increment the dashCount
                 if (lines[i] == '-')
                 {
                     dashCount++;
                 }
             }
 
-            //Word has been gussed when there are no more dashes in the blanked out word
+            //Word has been guessed when there are no more dashes in the blanked out word
             if (dashCount == 0)
             {
                 Console.WriteLine("You guessed the word! It was " + "'" + AI.ChosenWord + "'.");
@@ -59,6 +120,7 @@ namespace GuessTheWord
                 Console.ReadKey();
                 p1Win = true;
             }
+            //if there are any dashes, the player has not won 
             else
             {
                 p1Win = false;
@@ -66,14 +128,21 @@ namespace GuessTheWord
 
             return p1Win;
         }
+        /// <summary>
+        /// Starts the game loop
+        /// </summary>
         public void StartGame()
         {
             #region test
-            Console.WriteLine(WM.AllWords[5]);
-            AI.ChosenWord.Append(WM.AllWords[5]);
+            WordManagement.WordLength = WordManagement.PromptUserForWordLength();
+            AI.CurentWordFamily = A;
+            player.GuessesLeft = PromptUserForNumberOfGuesses();
+            PromptUserForTotalOfWordsInList();
+            Console.WriteLine("AI word fam element 0 = " + AI.CurentWordFamily[0]);
+            AI.ChosenWord.Append(WordManagement.AllWords[0]);
             #endregion
 
-            lines.Append(WM.BlankOutWord(AI.ChosenWord.Length));
+            lines.Append(WordManagement.BlankOutWord(AI.ChosenWord.Length));
             bool gameOver = false;
 
             while (!gameOver)
@@ -112,10 +181,13 @@ namespace GuessTheWord
                 {
                     //write to the console that the guess is incorrect
                     Console.WriteLine("Guess Incorrect :'(\n");
+
                     //add the guess to the used letters list
                     player.UsedLetters.Add(Convert.ToChar(guess));
                     //add the guess to the list of incorrect guesses
+
                     player.IncorrectLetters.Add(Convert.ToChar(guess));
+
                     //decrement a guess from the player
                     player.GuessesLeft--;
 
