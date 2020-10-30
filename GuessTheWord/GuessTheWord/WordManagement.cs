@@ -1,15 +1,17 @@
-﻿using System;
+﻿using Microsoft.VisualBasic.CompilerServices;
+using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
 using System.Text;
+using System.Text.RegularExpressions;
 
 namespace GuessTheWord
 {
     static public class WordManagement
     {
         #region Attributes
-        public static int WordLength { get; set; }
+        public static string WordLength { get; set; }
 
         //reads the text file containing all of the AI's words 
         static public List<string> AllWords = File.ReadAllLines(@"C:\Users\User\Documents\Code For Github\GuessTheWord\GuessTheWord\a.txt").ToList();
@@ -23,37 +25,44 @@ namespace GuessTheWord
         static public int PromptUserForWordLength()
         {
             bool stop = false;
+            int parsed = -1;
 
             while (!stop)
             {
                 Console.WriteLine("Enter a word length: ");
-                WordLength = Convert.ToInt32((Console.ReadLine().ToString()));
-               
-                if(string.IsNullOrEmpty(WordLength.ToString()));
-                {
-                    Console.WriteLine("Enter a number.");
-                }
+                WordLength = Console.ReadLine();
 
-                if (CheckWordList(WordLength))
+                if (!int.TryParse(WordLength.ToString(), out parsed))
                 {
-                    return WordLength;
+                    Console.WriteLine("Input was not a number.");
                 }
-                else
+                else 
                 {
-                    Console.WriteLine("No words of that length exist.");
-                }
+                    if (WordLength.Length > 0) 
+                    {
+                        Console.WriteLine("Enter a number.");
+                    }
+                    if (CheckWordList(WordLength))
+                    {
+                        return WordLength.Length;
+                    }
+                    else
+                    {
+                        Console.WriteLine("No words of that length exist.");
+                    }
 
+                }
             }
-            return WordLength;
+            return Convert.ToInt32(WordLength);
         }
 
-       public static List<string> GiveAIWordFamily()
+        public static List<string> GiveAIWordFamily()
         {
             List<string> WordFamily = new List<string>();
             
             for (int i = 0; i < AllWords.Count; i++)
             {
-                if (AllWords[i].Length == WordLength)
+                if (AllWords[i].Length == Convert.ToInt32(WordLength))
                 {
                     WordFamily.Add(AllWords[i]);
                 }
@@ -66,19 +75,21 @@ namespace GuessTheWord
         /// </summary>
         /// <param name="_wordLength"></param>
         /// <returns>Returns a bool stating if there is any words of the pasrsed in length</returns>
-        static bool CheckWordList(int _wordLength)
+        static bool CheckWordList(string _wordLength)
         {
             //checks if there are any words of the desired length
             bool foundWords = false;
             //counts the number of valid words based on the length
             int validWords = 0;
 
+            int wl = Convert.ToInt32(_wordLength);
+
             //loops through the AllWords list 
             for (int i = 0; i < AllWords.Count; i++)
             {
                 /*check if each element is the length of the inputted length;
                 true when the list element is the same size as the inputted length*/
-                if (AllWords[i].Length == _wordLength)
+                if (AllWords[i].Length ==  wl)
                 {
                     //increment the valid word count
                     validWords++;

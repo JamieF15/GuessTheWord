@@ -138,7 +138,7 @@ namespace GuessTheWord
         public void StartGame()
         {
             #region test
-            WordManagement.WordLength = WordManagement.PromptUserForWordLength();
+            WordManagement.WordLength = WordManagement.PromptUserForWordLength().ToString();
             player.GuessesLeft = PromptUserForNumberOfGuesses();
             PromptUserForTotalOfWordsInList();
             AI.ChosenWord.Append(WordManagement.AllWords[0]);
