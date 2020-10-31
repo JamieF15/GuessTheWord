@@ -25,32 +25,35 @@ namespace GuessTheWord
         static public int PromptUserForWordLength()
         {
             bool stop = false;
-            int parsed = -1;
+            int parsed;
 
             while (!stop)
             {
+                //prompts the user for the length of hte word to guess
                 Console.WriteLine("Enter a word length: ");
+                //read the input
                 WordLength = Console.ReadLine();
 
+                //check if the inputted value was a letter
                 if (!int.TryParse(WordLength.ToString(), out parsed))
                 {
+                    //display that it was a number
                     Console.WriteLine("Input was not a number.");
                 }
+                //if the input was a number this happens
                 else 
-                {
-                    if (WordLength.Length > 0) 
-                    {
-                        Console.WriteLine("Enter a number.");
-                    }
-                    if (CheckWordList(WordLength))
-                    {
+                {   //checks if the length of the word is greater than 0 and words of the inputted length are in the word list
+                    if (WordLength.Length > 0 && CheckWordList(WordLength))
+                    { 
+                        //returns the length of the word 
                         return WordLength.Length;
                     }
+                    //if there are no words of the inputted length in the list or the input is less than 0, this happesn 
                     else
                     {
+                        //prompt the user tha there are no words of that length in the list
                         Console.WriteLine("No words of that length exist.");
                     }
-
                 }
             }
             return Convert.ToInt32(WordLength);
@@ -82,14 +85,14 @@ namespace GuessTheWord
             //counts the number of valid words based on the length
             int validWords = 0;
 
-            int wl = Convert.ToInt32(_wordLength);
+            //int wl = Convert.ToInt32(_wordLength);
 
             //loops through the AllWords list 
             for (int i = 0; i < AllWords.Count; i++)
             {
                 /*check if each element is the length of the inputted length;
                 true when the list element is the same size as the inputted length*/
-                if (AllWords[i].Length ==  wl)
+                if (AllWords[i].Length ==  Convert.ToInt32(_wordLength))
                 {
                     //increment the valid word count
                     validWords++;
