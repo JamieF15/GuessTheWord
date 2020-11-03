@@ -25,26 +25,27 @@ namespace GuessTheWord
         static public int PromptUserForWordLength()
         {
             bool stop = false;
-            int parsed;
 
+            //loop until stop is true
             while (!stop)
             {
                 //prompts the user for the length of hte word to guess
                 Console.WriteLine("Enter a word length: ");
+
                 //read the input
                 WordLength = Console.ReadLine();
 
                 //check if the inputted value was a letter
-                if (!int.TryParse(WordLength.ToString(), out parsed))
+                if (!int.TryParse(WordLength.ToString(), out int parsed))
                 {
                     //display that it was a number
                     Console.WriteLine("Input was not a number.");
                 }
                 //if the input was a number this happens
-                else 
+                else
                 {   //checks if the length of the word is greater than 0 and words of the inputted length are in the word list
                     if (WordLength.Length > 0 && CheckWordList(WordLength))
-                    { 
+                    {
                         //returns the length of the word 
                         return Convert.ToInt32(WordLength);
                     }
@@ -59,6 +60,7 @@ namespace GuessTheWord
             return Convert.ToInt32(WordLength);
         }
 
+        //NOT USED CURRENTLY
         public static List<string> GiveAIWordFamily()
         {
             List<string> WordFamily = new List<string>();
@@ -76,16 +78,15 @@ namespace GuessTheWord
         /// <summary>
         /// Checks to see if AllWords list has any words of the inputted length
         /// </summary>
-        /// <param name="_wordLength"></param>
+        /// <param name="_wordLength">The length of the chosen word</param>
         /// <returns>Returns a bool stating if there is any words of the pasrsed in length</returns>
         static bool CheckWordList(string _wordLength)
         {
             //checks if there are any words of the desired length
             bool foundWords = false;
+
             //counts the number of valid words based on the length
             int validWords = 0;
-
-            //int wl = Convert.ToInt32(_wordLength);
 
             //loops through the AllWords list 
             for (int i = 0; i < AllWords.Count; i++)
@@ -94,9 +95,14 @@ namespace GuessTheWord
                 true when the list element is the same size as the inputted length*/
                 if (AllWords[i].Length ==  Convert.ToInt32(_wordLength))
                 {
-                    //increment the valid word count
-                    validWords++;
-                    //if there is more than 1 word of the inputted length, this fires 
+                    //check if there are any empty lines in the word file before inrementing the valid work count
+                    if (AllWords[i].Length > 0)
+                    {
+                        //increment the valid word count
+                        validWords++;
+                    }
+
+                    //if there is more than 1 word of the inputted length, found words get set to true, if not, it is set to false
                     if (validWords > 0)
                     {
                         foundWords = true;
