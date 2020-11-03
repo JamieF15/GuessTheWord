@@ -125,8 +125,9 @@ namespace GuessTheWord
                 for (int i = 0; i < player.UsedLetters.Count; i++)
                 {
                     //write each element to the console
-                    Console.Write(player.UsedLetters[i] + " \n");
+                    Console.Write(player.UsedLetters[i] + " ");
                 }
+                Console.WriteLine();
             }
         }
 
@@ -137,7 +138,7 @@ namespace GuessTheWord
         bool CheckForWinner()
         {
             //checks if the player has won
-            bool p1Win;
+            bool playerWin;
             //checks the amount of lines in the blanked out word
             int dashCount = 0;
             //loops through the lines stringbuilder and counts the dashes (-)
@@ -151,22 +152,25 @@ namespace GuessTheWord
                 }
             }
 
-            //Word has been guessed when there are no more dashes in the blanked out word
+            //word has been guessed when there are no more dashes in the blanked out word
             if (dashCount == 0)
             {
+                //print that the user has guessed the word
                 Console.WriteLine("You guessed the word! It was " + "'" + AI.ChosenWord + "'.");
                 Console.WriteLine("Press any key to exit.");
                 Console.ReadKey();
-                p1Win = true;
+                playerWin = true;
             }
             //if there are any dashes, the player has not won 
             else
             {
-                p1Win = false;
+                playerWin = false;
             }
 
-            return p1Win;
+            return playerWin;
         }
+
+        
 
         /// <summary>
         /// Starts the game loop
@@ -177,21 +181,28 @@ namespace GuessTheWord
             WordManagement.WordLength = WordManagement.PromptUserForWordLength().ToString();
             player.GuessesLeft = PromptUserForNumberOfGuesses();
             PromptUserForTotalOfWordsInList();
-            AI.ChosenWord.Append(WordManagement.AllWords[0]);
+            AI.ChosenWord.Append(WordManagement.AllWords[1]);
             Console.WriteLine("AI word fam element 0 = " + AI.ChosenWord);
             #endregion
 
             //set the appropriate number of dashes to the stringbuilder
             lines.Append(WordManagement.BlankOutWord(AI.ChosenWord.Length));
             bool gameOver = false;
+            string guess;
 
+            //loop until gameOver is true
             while (!gameOver)
             {
+                //write the number of guesses the player has left
                 Console.WriteLine("Guesses left: " + player.GuessesLeft);
+                //print the used letters to the console
                 PrintUsedLetters();
 
+                //print the lines string bulder
                 Console.WriteLine("Word: " + lines);
-                string guess = player.MakeGuess();
+
+                //read the guess from the user
+                guess = player.MakeGuess();
 
                 //the guess if correct if the chosen word contains the guessed letter
                 if (AI.ChosenWord.ToString().Contains(guess))
