@@ -15,7 +15,6 @@ namespace GuessTheWord
         #endregion
 
         #region Methods
-
         /// <summary>
         /// Prompts the user if they want to see how many words they are to guess from before the game starts
         /// </summary>
@@ -29,6 +28,7 @@ namespace GuessTheWord
             {
                 //prompt the user if they want to see the number of words they are to guess from
                 Console.WriteLine("Do you want to see the number of words in the list? y/n");
+
                 //read the input
                 input = Console.ReadLine();
 
@@ -36,14 +36,14 @@ namespace GuessTheWord
                 if (input.Length == 1 && input == "y" || input == "Y")
                 {
                     //check if there is only one word in the AI word list for appropriate grammar to be printed
-                    if (AI.CurentWordFamily.Count == 1)
+                    if (AI.CurrentWordFamily.Count == 1)
                     {
-                        Console.WriteLine("There is " + AI.CurentWordFamily.Count + " word to guess from.");
+                        Console.WriteLine("There is " + AI.CurrentWordFamily.Count + " word to guess from.");
                     }
                     //check if the length is greater than 1 in order for correct grammer to be shown
                     else
                     {
-                        Console.WriteLine("There are " + AI.CurentWordFamily.Count + " words to guess from.");
+                        Console.WriteLine("There are " + AI.CurrentWordFamily.Count + " words to guess from.");
                     }
                     //stop the loop
                     stop = true;
@@ -170,26 +170,29 @@ namespace GuessTheWord
             return playerWin;
         }
 
-        
-
         /// <summary>
         /// Starts the game loop
         /// </summary>
         public void StartGame()
         {
-            #region test
-            WordManagement.WordLength = WordManagement.PromptUserForWordLength().ToString();
-            player.GuessesLeft = PromptUserForNumberOfGuesses();
-            PromptUserForTotalOfWordsInList();
-            AI.ChosenWord.Append(WordManagement.AllWords[1]);
-            Console.WriteLine("AI word fam element 0 = " + AI.ChosenWord);
-            #endregion
-
-            //set the appropriate number of dashes to the stringbuilder
-            lines.Append(WordManagement.BlankOutWord(AI.ChosenWord.Length));
             bool gameOver = false;
             string guess;
 
+            //prompt the user for a number and set it to the word length
+            WordManagement.WordLength = WordManagement.PromptUserForWordLength().ToString();
+
+            //prompt the user for a number and set it to the number of guesses left
+            player.GuessesLeft = PromptUserForNumberOfGuesses();
+
+            //create the first word for the AI
+            AI.CreateFirstWordFamily(WordManagement.AllWords, Convert.ToInt32(WordManagement.WordLength));
+
+            //prompt the user if htey want to see how many words are in the AI's initial word family
+            PromptUserForTotalOfWordsInList();
+
+            //set the appropriate number of dashes to the stringbuilder
+            lines.Append(WordManagement.BlankOutWord(AI.ChosenWord.Length));
+    
             //loop until gameOver is true
             while (!gameOver)
             {
@@ -253,15 +256,21 @@ namespace GuessTheWord
                     console that the game is over */
                     if (player.GuessesLeft == 0)
                     {
+                        //set gameover to true to stop the game
                         gameOver = true;
+                        //print that the player has lost, along with the chosen word
+
                         Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.ChosenWord + "'");
+
+                        //prompt that the user can press any key to exit
                         Console.WriteLine("Press any key to exit.");
+
+                        //pause the program
                         Console.ReadKey();
                     }
                 }
             }
         }
-
         #endregion
     }
 }

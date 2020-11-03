@@ -46,7 +46,7 @@ namespace GuessTheWord
                     if (WordLength.Length > 0 && CheckWordList(WordLength))
                     { 
                         //returns the length of the word 
-                        return WordLength.Length;
+                        return Convert.ToInt32(WordLength);
                     }
                     //if there are no words of the inputted length in the list or the input is less than 0, this happesn 
                     else
