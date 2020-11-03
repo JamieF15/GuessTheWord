@@ -175,7 +175,10 @@ namespace GuessTheWord
         /// </summary>
         public void StartGame()
         {
+            //shows if the game loop should stop or not
             bool gameOver = false;
+            
+            //holds the guessed letter
             string guess;
 
             //prompt the user for a number and set it to the word length
@@ -187,7 +190,7 @@ namespace GuessTheWord
             //create the first word for the AI
             AI.CreateFirstWordFamily(WordManagement.AllWords, Convert.ToInt32(WordManagement.WordLength));
 
-            //prompt the user if htey want to see how many words are in the AI's initial word family
+            //prompt the user if they want to see how many words are in the AI's initial word family
             PromptUserForTotalOfWordsInList();
 
             //set the appropriate number of dashes to the stringbuilder
@@ -228,14 +231,18 @@ namespace GuessTheWord
                             /*set the appropriate element of the lines of the stringbuilder to the 
                             character of the corresponding chosen word*/
                             lines[i] = AI.ChosenWord[i];
+
                             //then check if the player has won (when there are no dashes left in the string builder)
                             if (CheckForWinner())
                             {
                                 //set the game to 'over'
                                 gameOver = true;
+
                             }
                         }
                     }
+                    AI.CreateNewWordFamily(lines.ToString());
+                    Console.WriteLine("AI new list size: " + AI.CurrentWordFamily.Count);
                 }
                 //triggers when the ai's chosen word does not contain the guess
                 else
