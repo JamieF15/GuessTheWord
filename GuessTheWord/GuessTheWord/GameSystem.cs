@@ -175,11 +175,7 @@ namespace GuessTheWord
             return playerWin;
         }
 
-        void CheckForLoss()
-        {
 
-
-        }
 
         /// <summary>
         /// Starts the game loop
@@ -243,9 +239,11 @@ namespace GuessTheWord
                             character of the corresponding chosen word*/
                             lines[i] = AI.ChosenWord[i];
 
+                            AI.ChangeChosenWord(lines.ToString());
+
                             //then check if the player has won (when there are no dashes left in the string builder)
                             if (CheckForWinner())
-                            {
+                            { 
                                 //set the game to 'over'
                                 gameOver = true;
 

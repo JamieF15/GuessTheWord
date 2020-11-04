@@ -36,7 +36,22 @@ namespace GuessTheWord
             ChosenWord.Append(CurrentWordFamily[0]);
         }
 
-        
+        /// <summary>
+        /// Changes the chosen word so not to lose
+        /// </summary>
+        /// <param name="lines">The revealed word</param>
+        public void ChangeChosenWord(string lines)
+        {
+            if (!lines.Contains("-"))
+            {
+                if (CurrentWordFamily.Count > 1)
+                {
+                    ChosenWord.Clear();
+                    CurrentWordFamily.RemoveAt(0);
+                    ChosenWord.Append(CurrentWordFamily[0]);
+                }
+            }
+        }
 
         /// <summary>
         /// Creates a new word family based on the revealed letters in lines string builder and the expected number of revealed letters 
