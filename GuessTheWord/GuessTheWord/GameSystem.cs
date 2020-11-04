@@ -9,6 +9,7 @@ namespace GuessTheWord
     public class GameSystem
     {
         #region Objects
+        //instantiate the relevant objects
         public readonly AI AI = new AI();
         public readonly Player player = new Player();
         readonly StringBuilder lines = new StringBuilder();
@@ -20,7 +21,10 @@ namespace GuessTheWord
         /// </summary>
         void PromptUserForTotalOfWordsInList()
         {
+            //holds user input
             string input;
+
+            //stops the prompt loop
             bool stop = false;
 
             //loops until stop is true
@@ -45,6 +49,7 @@ namespace GuessTheWord
                     {
                         Console.WriteLine("There are " + AI.CurrentWordFamily.Count + " words to guess from.");
                     }
+
                     //stop the loop
                     stop = true;
                 }
@@ -67,7 +72,7 @@ namespace GuessTheWord
             bool stop = false;
 
             //for being parsed out of the int.TryParse 
-            int parsed = -1;
+          //  int parsed = -1; potentially uneeded
 
             //number of guesses for the user
             string numberOfGuesses = "";
@@ -80,7 +85,7 @@ namespace GuessTheWord
                 numberOfGuesses = Console.ReadLine();
 
                 //check if the input is a letter
-                if (!int.TryParse(numberOfGuesses.ToString(), out parsed))
+                if (!int.TryParse(numberOfGuesses, out _))
                 {
                     //prompts user that the input was not a number
                     Console.WriteLine("Input was not a number.");
@@ -98,7 +103,7 @@ namespace GuessTheWord
                     else
                     {
                         //shows the user that the guess must be greater than 0
-                        Console.WriteLine("Guesses must be greater than 0.");
+                        Console.WriteLine("Number of guesses must be greater than 0.");
                     }
                 }
             }
@@ -168,6 +173,12 @@ namespace GuessTheWord
             }
 
             return playerWin;
+        }
+
+        void CheckForLoss()
+        {
+
+
         }
 
         /// <summary>
@@ -241,10 +252,14 @@ namespace GuessTheWord
                             }
                         }
                     }
+                    
+                    //after each correct guess, the AI creates a new word family
                     AI.CreateNewWordFamily(lines.ToString());
+
+                    //test purposes
                     Console.WriteLine("AI new list size: " + AI.CurrentWordFamily.Count);
                 }
-                //triggers when the ai's chosen word does not contain the guess
+                //triggers when the AI's chosen word does not contain the guess
                 else
                 {
                     //write to the console that the guess is incorrect

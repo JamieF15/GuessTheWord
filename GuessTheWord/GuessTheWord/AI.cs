@@ -36,6 +36,8 @@ namespace GuessTheWord
             ChosenWord.Append(CurrentWordFamily[0]);
         }
 
+        
+
         /// <summary>
         /// Creates a new word family based on the revealed letters in lines string builder and the expected number of revealed letters 
         /// </summary>
@@ -48,10 +50,10 @@ namespace GuessTheWord
             //stores the amount of revealed letters in the lines stringbuilder
             int revealedLetters = 0;
 
-            //stores the amount of revealed letters in the  
+            //stores the amount of revealed letters in the chosen word
             int revealedLettersInWord;
 
-            //loopthrough the lines stringbuilder and check how many letters each word needs to have revealed 
+            //loop through the 'lines' stringbuilder and check how many letters each word needs to have revealed 
             for (int i = 0; i < lines.Length; i++)
             {
                 //if the subject element of the lines stringbuilder is not a dash (a revealed letter)
@@ -65,7 +67,7 @@ namespace GuessTheWord
             //loop through the list of words in the family
             for (int i = 0; i < CurrentWordFamily.Count; i++)
             {
-                //reset the amount of letters that are revealed in a word 
+                //reset the amount of letters that are revealed in a word for each iteration 
                 revealedLettersInWord = 0;
 
                 //loop through each individual word
@@ -74,8 +76,8 @@ namespace GuessTheWord
                     //check if each letter of each word is equal to each revealed letter of the lines string builder
                     if (CurrentWordFamily[i].Substring(j, 1) == lines.ToString().Substring(j, 1) && lines.ToString().Substring(j, 1) != "-")
                     {
-                        /*if the word contains the same letters in the same positions of revealed letters
-                        in the lines stringbuilder, add it to the new word family*/
+                        /*for each letter being looped through, increment the revealed letters in word counter 
+                        for each letter and position is has in common with the 'lines' stringbuilder*/
                         revealedLettersInWord++;
 
                         //if the revealed letters in the word is the same as the expected amount 
@@ -88,7 +90,7 @@ namespace GuessTheWord
                 }
             }
 
-            //clear the current word list
+            //clear the current word family
             CurrentWordFamily.Clear();
 
             //add the new word family to the empty current word family 

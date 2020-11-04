@@ -13,8 +13,7 @@ namespace GuessTheWord
     public class Player
     {
         #region Properties
-        public int ID { get; set; } = 1;
-        public int GuessesLeft { get; set; } = 3;
+        public int GuessesLeft { get; set; }
 
         public List<char> CorrectLetters = new List<char>();
         public List<char> UsedLetters = new List<char>();
