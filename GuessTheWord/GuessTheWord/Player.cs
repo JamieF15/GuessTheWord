@@ -41,15 +41,16 @@ namespace GuessTheWord
 
                 //write to the conole a prompt
                 Console.Write("Enter a letter: ");
+
                 //read the input from the user
                 guess = Console.ReadLine();
 
                 //code refrenced from 'https://stackoverflow.com/questions/34616050/how-to-check-if-a-char-is-in-the-alphabet-in-c-sharp'
                 //check if the inputted letter is a part of the alphabet
-                bool AlphabetCheck = Regex.IsMatch(guess.ToString(), "[a-z]", RegexOptions.IgnoreCase);
+                bool alphabetCheck = Regex.IsMatch(guess.ToString(), "[a-z]", RegexOptions.IgnoreCase);
 
                 //if the input is exactly 1 and is in the alphabet, this is true
-                if (guess.Length == 1 && AlphabetCheck)
+                if (guess.Length == 1 && alphabetCheck)
                 {
                     //loop through the list of used letters 
                     for (int i = 0; i < UsedLetters.Count; i++)
@@ -59,13 +60,15 @@ namespace GuessTheWord
                         {
                             //set the letter to used
                             usedLetter = true;
+
                             //stop the loop
                             break;
                         }
                     }
                 }
+
                 //true if the guess is 1 character in length, is in the alphabet, and has not been used
-                if (guess.Length == 1 && AlphabetCheck && !usedLetter)
+                if (guess.Length == 1 && alphabetCheck && !usedLetter)
                 {
                     //return the guess as lower case to allow for both uppercase and lower case to be valid
                     return guess.ToLower();
@@ -84,7 +87,7 @@ namespace GuessTheWord
                         Console.WriteLine("Guess is empty.\n");
                     }
                     //if the letter is not in the alphabet, prompt the user that is the case
-                    else if (!AlphabetCheck)
+                    else if (!alphabetCheck)
                     {
                         Console.WriteLine("Guess not a valid character.\n");
                     }

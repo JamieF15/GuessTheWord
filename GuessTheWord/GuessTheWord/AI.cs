@@ -81,7 +81,6 @@ namespace GuessTheWord
                         CurrentWordFamily.RemoveAt(i);
                     }
                 }
-
             }
         }
 
@@ -138,15 +137,6 @@ namespace GuessTheWord
 
                     //append the new first word of the word family onto hte newWord stringbuilder
                     ChosenWord.Append(CurrentWordFamily[0]);
-
-
-
-
-                    //make the chosen word the new word
-                    //ChosenWord.Append(newWord);
-
-                    //clear the new word
-                    //newWord.Clear();
                 }
             }
         }

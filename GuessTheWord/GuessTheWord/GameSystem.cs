@@ -16,6 +16,20 @@ namespace GuessTheWord
         #endregion
 
         #region Methods
+
+        /// <summary>
+        /// 
+        /// </summary>
+        void ResetGameData()
+        {
+            player.CorrectLetters.Clear();
+            player.IncorrectLetters.Clear();
+            player.UsedLetters.Clear();
+            lines.Clear();
+            AI.ChosenWord.Clear();
+            AI.CurrentWordFamily.Clear();
+        }
+
         /// <summary>
         /// Prompts the user if they want to see how many words they are to guess from before the game starts
         /// </summary>
@@ -65,6 +79,49 @@ namespace GuessTheWord
             Console.ReadKey();
             Console.Clear();
         }
+
+
+        void PromptUserToPlayAgain()
+        {
+            //holds user input
+            string input;
+
+            //stops the prompt loop
+            bool stop = false;
+
+            //loops until stop is true
+            while (!stop)
+            {
+                //prompt the user if they want to see the number of words they are to guess from
+                Console.WriteLine("Do you want to play again? y/n");
+
+                //read the input
+                input = Console.ReadLine();
+
+                //if the length of the input is one or is 'y' or 'Y', this happens
+                if (input.Length == 1 && input == "y" || input == "Y")
+                {
+                    ResetGameData();
+                    Console.Clear();
+                    StartGame();
+                    stop = true;
+                }
+                //if the input is 1 and is 'n' or 'N', this happens
+                else if (input.Length == 1 && input == "n" || input == "N")
+                {
+
+                    Console.WriteLine("Press any key to exit.");
+                    Console.ReadKey();
+                    System.Environment.Exit(0);
+                    stop = true;
+                }
+            }
+
+            Console.WriteLine("Press any key to start!");
+            Console.ReadKey();
+            Console.Clear();
+        }
+
 
         /// <summary>
         /// Prompts the user for the number of guesses they want
@@ -170,7 +227,7 @@ namespace GuessTheWord
             {
                 //print that the user has guessed the word
                 Console.WriteLine("You guessed the word! It was " + "'" + AI.ChosenWord + "'.");
-                Console.WriteLine("Press any key to exit.");
+                PromptUserToPlayAgain();
                 Console.ReadKey();
                 playerWin = true;
             }
@@ -212,6 +269,8 @@ namespace GuessTheWord
             //loop until gameOver is true
             while (!gameOver)
             {
+                AI.RemoveWordFromFamily(player);
+
                 //write the number of guesses the player has left
                 Console.WriteLine("Guesses left: " + player.GuessesLeft);
 
@@ -316,9 +375,7 @@ namespace GuessTheWord
 
                         Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.ChosenWord + "'");
 
-
-                        //prompt that the user can press any key to exit
-                        Console.WriteLine("Press any key to exit.");
+                        PromptUserToPlayAgain();
 
                         //pause the program
                         Console.ReadKey();
