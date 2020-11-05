@@ -7,7 +7,7 @@ using System.Text;
 using System.Text.RegularExpressions;
 
 namespace GuessTheWord
-{
+{ 
     static public class WordManagement
     {
         #region Attributes
