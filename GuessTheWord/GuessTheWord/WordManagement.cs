@@ -57,6 +57,8 @@ namespace GuessTheWord
                     }
                 }
             }
+
+            //return the wordlength as a integer
             return Convert.ToInt32(WordLength);
         }
 
@@ -105,10 +107,13 @@ namespace GuessTheWord
                     //if there is more than 1 word of the inputted length, found words get set to true, if not, it is set to false
                     if (validWords > 0)
                     {
+                        //set found words to true
                         foundWords = true;
                     }
+                    //if there are no words of the desired length
                     else
                     {
+                        //set found words to false
                         foundWords = false;
                     }
                 }

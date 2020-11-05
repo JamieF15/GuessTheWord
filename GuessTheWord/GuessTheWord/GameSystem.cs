@@ -75,9 +75,6 @@ namespace GuessTheWord
             //stops the loop
             bool stop = false;
 
-            //for being parsed out of the int.TryParse 
-            //  int parsed = -1; potentially uneeded
-
             //number of guesses for the user
             string numberOfGuesses = "";
 
@@ -122,6 +119,7 @@ namespace GuessTheWord
         /// </summary>
         void PrintUsedLetters()
         {
+            //this is written before the letters 
             Console.Write("Used Letters: ");
 
             //if there has been no guessed letters this happens
@@ -138,6 +136,8 @@ namespace GuessTheWord
                     //write each element to the console
                     Console.Write(player.UsedLetters[i] + " ");
                 }
+
+                //Add a blank line to the console
                 Console.WriteLine();
             }
         }
@@ -150,8 +150,10 @@ namespace GuessTheWord
         {
             //checks if the player has won
             bool playerWin;
+
             //checks the amount of lines in the blanked out word
             int dashCount = 0;
+
             //loops through the lines stringbuilder and counts the dashes (-)
             for (int i = 0; i < lines.Length; i++)
             {
@@ -271,12 +273,15 @@ namespace GuessTheWord
                     //after each correct guess, the AI creates a new word family
                     AI.CreateNewWordFamily(lines.ToString());
 
+
+                    //+++++++++++++++++++++++++++++++POTENTIALLY NOT NEEDED+++++++++++++++++++++++++++++++
                     //check if there is more than 1 word in the AI's current word family so it can be changed 
                     if (AI.CurrentWordFamily.Count >= 0 && !AI.CheckIfNextWordHasUsedLettersIn(player))
                     {
                         //change the AI's chosen word
-                        AI.ChangeChosenWordWithOneLetterLeft(lines.ToString());
+                        //AI.ChangeChosenWordWithOneLetterLeft(lines.ToString());
                     }
+                    //+++++++++++++++++++++++++++++++POTENTIALLY NOT NEEDED+++++++++++++++++++++++++++++++
 
                     //Testing 
                     Console.WriteLine("AI CHOSEN WORD: " + AI.ChosenWord);
