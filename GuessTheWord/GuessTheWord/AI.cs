@@ -1,8 +1,11 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Net;
+using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
+using System.Linq;
 
 namespace GuessTheWord
 {
@@ -41,7 +44,7 @@ namespace GuessTheWord
         /// </summary>
         /// <param name="lines">The partially or fully guessed word</param>
         /// <returns>Returns the amount of correctly guessed letters of the AI's chosen word</returns>
-        public int GetAmountOfGussedLetters(string lines)
+        public int GetAmountOfGuessedLetters(string lines)
         {
             //number of correctly guessed letters 
             int letterCount = 0;
@@ -90,7 +93,7 @@ namespace GuessTheWord
         /// </summary>
         /// <param name="player">The player that has guessed incorrect letters</param>
         /// <returns></returns>
-        public bool CheckIfNextWordHasUsedLettersIn(Player player)
+        public bool CheckIfNextWordHasIncorrectLetters(Player player)
         {
             //stores if there is an incorrect 
             bool containsALetter = false;
@@ -113,6 +116,44 @@ namespace GuessTheWord
             return containsALetter;
         }
 
+
+        /// <summary>
+        /// To prevent a soft-lock, this method removes words that are ALL used letters so they cannot be changed to
+        /// </summary>
+        /// <param name="player">The player that owns the used letters to check against</param>
+        public void CheckIfWordHasUsedLetter(Player player)
+        {
+            //stores the number fo used letters in the word
+            int usedLetterCount;
+
+            //loop through the AI's current word family
+            for (int i = 0; i < CurrentWordFamily.Count; i++)
+            {
+                //set the used letter count to 0 for each word
+                usedLetterCount = 0;
+
+                //loop through the player's used letters 
+                for (int j = 0; j < player.UsedLetters.Count; j++)
+                {
+                    //code refrenced from 'https://stackoverflow.com/questions/5340564/counting-how-many-times-a-certain-char-appears-in-a-string-before-any-other-char'
+                    //while the word being check is shorter than the word being checked is equal to any letter in the used letters list
+                    while (usedLetterCount < CurrentWordFamily[i].Length && CurrentWordFamily[i][usedLetterCount] == player.UsedLetters[j])
+                    {
+                        //inrement the used letter count
+                        usedLetterCount++;
+                    }
+
+                    /*if the used letter count is equal to the length of hte word, meaning that the whole
+                    word is used letter, remove it as it cannot be changed to without breaking the game*/
+                    if (usedLetterCount == Convert.ToInt32(WordManagement.WordLength))
+                    {
+                        //remove the word from the family
+                        CurrentWordFamily.RemoveAt(i);
+                    }
+                }
+            }
+        }
+
         /// <summary>
         /// Changes the chosen word so not to lose
         /// The word is to be able to change under a number of different circum 
@@ -120,11 +161,8 @@ namespace GuessTheWord
         /// <param name="lines">The revealed word</param>
         public void ChangeChosenWordWithOneLetterLeft(string lines)
         {
-            //acts as a buffer between the chosen word and the current word family
-            //StringBuilder newWord = new StringBuilder();
-
             //if there is 1 letter left to guess, change the word
-            if (GetAmountOfGussedLetters(lines) == ChosenWord.Length - 1)
+            if (GetAmountOfGuessedLetters(lines) == ChosenWord.Length - 1)
             {
                 //check if there is more than 1 word in the AI's word family so there is a word to change to 
                 if (CurrentWordFamily.Count > 1)
