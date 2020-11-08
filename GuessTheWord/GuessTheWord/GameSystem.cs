@@ -1,4 +1,5 @@
-﻿using System;
+﻿using Microsoft.VisualBasic;
+using System;
 using System.Collections.Generic;
 using System.ComponentModel;
 using System.Text;
@@ -18,14 +19,19 @@ namespace GuessTheWord
         #region Methods
 
         /// <summary>
-        /// 
+        /// Resets the data structures of the player and AI
         /// </summary>
         void ResetGameData()
         {
+            //clear all the lists of correct, incorrect, and used letters
             player.CorrectLetters.Clear();
             player.IncorrectLetters.Clear();
             player.UsedLetters.Clear();
+
+            //clear the lines stringbuilder
             lines.Clear();
+
+            //clear the AI's data structures
             AI.ChosenWord.Clear();
             AI.CurrentWordFamily.Clear();
         }
@@ -80,7 +86,9 @@ namespace GuessTheWord
             Console.Clear();
         }
 
-
+        /// <summary>
+        /// 
+        /// </summary>
         void PromptUserToPlayAgain()
         {
             //holds user input
@@ -101,18 +109,32 @@ namespace GuessTheWord
                 //if the length of the input is one or is 'y' or 'Y', this happens
                 if (input.Length == 1 && input == "y" || input == "Y")
                 {
+                    //reset all the data structures in the game
                     ResetGameData();
+
+                    //clear the console
                     Console.Clear();
+
+                    //start the game again
                     StartGame();
+
+                    //stop the loop
                     stop = true;
                 }
                 //if the input is 1 and is 'n' or 'N', this happens
                 else if (input.Length == 1 && input == "n" || input == "N")
                 {
 
+                    //prompt the user to exit
                     Console.WriteLine("Press any key to exit.");
+
+                    //puase the console
                     Console.ReadKey();
-                    System.Environment.Exit(0);
+
+                    //stop the program from running
+                    Environment.Exit(0);
+
+                    //stop the loop
                     stop = true;
                 }
             }
@@ -121,7 +143,6 @@ namespace GuessTheWord
             Console.ReadKey();
             Console.Clear();
         }
-
 
         /// <summary>
         /// Prompts the user for the number of guesses they want
@@ -269,8 +290,6 @@ namespace GuessTheWord
             //loop until gameOver is true
             while (!gameOver)
             {
-
-
                 //write the number of guesses the player has left
                 Console.WriteLine("Guesses left: " + player.GuessesLeft);
 
@@ -294,6 +313,9 @@ namespace GuessTheWord
 
                     //add the guess to used letters
                     player.UsedLetters.Add(Convert.ToChar(guess));
+
+                    AI.RemoveWordWithUsedLetter(player, Convert.ToChar(guess));
+
 
                     //loop through the lines stringbuilder
                     for (int i = 0; i < lines.Length; i++)
@@ -334,7 +356,6 @@ namespace GuessTheWord
 
                     //removes all invald word from the family
                     AI.RemoveWordFromFamily(player);
-                    AI.CheckIfWordHasUsedLetter(player);
 
                     //Testing 
                     Console.WriteLine("AI CHOSEN WORD: " + AI.ChosenWord);
@@ -365,12 +386,12 @@ namespace GuessTheWord
                     if (player.GuessesLeft == 0)
                     {
                         //set gameover to true to stop the game
-                       // gameOver = true;
-                        //print that the player has lost, along with the chosen word
+                        gameOver = true;
 
+                        //print that the player has lost, along with the chosen word
                         Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.ChosenWord + "'");
 
-                        //
+                        //prompt the user to replay the game
                         PromptUserToPlayAgain();
 
                         //pause the program

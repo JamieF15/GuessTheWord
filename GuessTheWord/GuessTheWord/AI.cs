@@ -89,7 +89,7 @@ namespace GuessTheWord
 
         /// <summary>
         /// As to not cause a situation where a word is changed to one that contians 
-        /// a letter that has already been guessed incorrectly, this method makes sure that does not happen a
+        /// a letter that has already been guessed incorrectly, this method makes sure that does not happen 
         /// </summary>
         /// <param name="player">The player that has guessed incorrect letters</param>
         /// <returns></returns>
@@ -116,12 +116,11 @@ namespace GuessTheWord
             return containsALetter;
         }
 
-
         /// <summary>
         /// To prevent a soft-lock, this method removes words that are ALL used letters so they cannot be changed to
         /// </summary>
         /// <param name="player">The player that owns the used letters to check against</param>
-        public void CheckIfWordHasUsedLetter(Player player)
+        public void RemoveWordWithUsedLetter(Player player, char guess)
         {
             //stores the number fo used letters in the word
             int usedLetterCount;
@@ -133,23 +132,21 @@ namespace GuessTheWord
                 usedLetterCount = 0;
 
                 //loop through the player's used letters 
-                for (int j = 0; j < player.UsedLetters.Count; j++)
+                for (int j = 0; j < CurrentWordFamily[i].Length; j++)
                 {
-                    //code refrenced from 'https://stackoverflow.com/questions/5340564/counting-how-many-times-a-certain-char-appears-in-a-string-before-any-other-char'
-                    //while the word being check is shorter than the word being checked is equal to any letter in the used letters list
-                    while (usedLetterCount < CurrentWordFamily[i].Length && CurrentWordFamily[i][usedLetterCount] == player.UsedLetters[j])
+                    //if the current word being checked contains the guessed letter
+                    if (CurrentWordFamily[i].Substring(j, 1) == guess.ToString())
                     {
-                        //inrement the used letter count
+                        //increment the counter
                         usedLetterCount++;
                     }
+                }
 
-                    /*if the used letter count is equal to the length of hte word, meaning that the whole
-                    word is used letter, remove it as it cannot be changed to without breaking the game*/
-                    if (usedLetterCount == Convert.ToInt32(WordManagement.WordLength))
-                    {
-                        //remove the word from the family
-                        CurrentWordFamily.RemoveAt(i);
-                    }
+                //if there is more then 1 used letter in that word, remove it - it will break the game 
+                if (usedLetterCount  >= 2)
+                {
+                    //remove the word from the family
+                    CurrentWordFamily.RemoveAt(i);
                 }
             }
         }
