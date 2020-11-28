@@ -6,6 +6,7 @@ using System.Runtime.CompilerServices;
 using System.Runtime.InteropServices;
 using System.Text;
 using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace GuessTheWord
 {
@@ -22,9 +23,11 @@ namespace GuessTheWord
         /// </summary>
         /// <param name="_WMlist">The entire list of words</param>
         /// <param name="wordLen">The desired lenth of the words to guess</param>
-        public void CreateFirstWordFamily(List<string> _WMlist, int wordLen)
+        public void GetAllWordsOfOneLength(List<string> _WMlist, int wordLen)
         {
-            //loop throguh the list of all words 
+            Random rng = new Random();
+
+            //loop through the list of all words 
             for (int i = 0; i < _WMlist.Count; i++)
             {
                 //if the word in the word list is length of the desired word lengh, add it to hte AI's word family
@@ -35,8 +38,106 @@ namespace GuessTheWord
                 }
             }
 
-            //add the first word of the word family as the initial chosen word as it is largely irrelevant what the first chosen word is 
-            ChosenWord.Append(CurrentWordFamily[0]);
+            //to make the AI harder to beat, make the initial word random 
+            ChosenWord.Append(CurrentWordFamily[
+              0 // rng.Next(0, CurrentWordFamily.Count())
+                ]);
+        }
+
+        List<string> FindAllWordFamilies(char guess)
+        {
+            List<string> AllWordsWithGuessIn = new List<string>();
+
+            for (int i = 0; i < CurrentWordFamily.Count; i++)
+            {
+                if (CurrentWordFamily[i].ToString().Contains(guess))
+                {
+                    AllWordsWithGuessIn.Add(CurrentWordFamily[i]);
+                }
+            }
+
+            return AllWordsWithGuessIn;
+        }
+
+        void CountVowels(List<string> allWordFamilies)
+        {
+            int vowelCount = 0;
+
+            for (int i = 0; i < allWordFamilies.Count; i++)
+            {
+                for (int j = 0; j < WordManagement.WordLength.Length; j++)
+                {
+                    if (allWordFamilies[i].ToString().Substring(j, 1).ToLower() == "a"
+                     || allWordFamilies[i].ToString().Substring(j, 1).ToLower() == "e"
+                     || allWordFamilies[i].ToString().Substring(j, 1).ToLower() == "i"
+                     || allWordFamilies[i].ToString().Substring(j, 1).ToLower() == "o"
+                     || allWordFamilies[i].ToString().Substring(j, 1).ToLower() == "u")
+                    {
+                        vowelCount++;
+                    }
+                }
+
+            }
+        }
+
+
+        int GetAmountOfCorrectLettersInWord(string lines, string arrayElement)
+        {
+            int num = 0;
+
+            for (int i = 0; i < arrayElement.Length; i++)
+            {
+                if (arrayElement.Substring(i, 1) == lines.Substring(i, 1))
+                {
+                    num++;
+                }
+            }
+
+            return num;
+        }
+
+        /// <summary>
+        /// based on the number of vowels each each word family, the amount the guessed letter appears in the word family
+        /// </summary>
+        /// <param name="guess"></param>
+        void QueryWordList(char guess, string revealedWord)
+        {
+            string[] familyA = System.IO.File.ReadAllLines(@"C:\Users\User\Documents\Code For Github\GuessTheWord\GuessTheWord\familya");
+            string[] familyB = System.IO.File.ReadAllLines(@"C:\Users\User\Documents\Code For Github\GuessTheWord\GuessTheWord\familyb");
+
+            int numberOfSubjectLetter = 0;
+
+            for (int i = 0; i < CurrentWordFamily.Count; i++)
+            {
+                for (int j = 0; j < WordManagement.WordLength.Length; j++)
+                {
+                    if (CurrentWordFamily[i].Substring(j, 1) == revealedWord.Substring(j, 1))
+                    {
+                        numberOfSubjectLetter++;
+
+                        for (int k = numberOfSubjectLetter; k < CurrentWordFamily.Count; k++)
+                        {
+                            if (k == 1)
+                            {
+                                familyA.Append(CurrentWordFamily[i]);
+                            }
+                        }
+
+                    }
+                }
+            }
+
+            for (int i = 0; i < CurrentWordFamily.Count; i++)
+            {
+
+                for (int j = 0; j < WordManagement.WordLength.Length; j++)
+                {
+                    var family = from word in CurrentWordFamily
+                                 where GetAmountOfCorrectLettersInWord(revealedWord, CurrentWordFamily[i]) == j
+                                 orderby word ascending
+                                 select word;
+                }
+            }
         }
 
         /// <summary>
@@ -77,11 +178,18 @@ namespace GuessTheWord
                 //loop through each incorrect letter
                 for (int j = 0; j < player.IncorrectLetters.Count; j++)
                 {
+
                     //if the element of the word family contains a letter from the incorrect letters list
                     if (CurrentWordFamily[i].Contains(player.IncorrectLetters[j]))
                     {
                         //remove it from the word family
                         CurrentWordFamily.RemoveAt(i);
+
+                        //clear the chosen word
+                        ChosenWord.Clear();
+
+                        //change the chosen word to the new word in position 0
+                        ChosenWord.Append(i);
                     }
                 }
             }
@@ -120,33 +228,48 @@ namespace GuessTheWord
         /// To prevent a soft-lock, this method removes words that are ALL used letters so they cannot be changed to
         /// </summary>
         /// <param name="player">The player that owns the used letters to check against</param>
-        public void RemoveWordWithUsedLetter(Player player, char guess)
+        /// <param name="lines">Used to determine how many lettered have been guessed correctly</param>
+        public void RemoveWordWithUsedLetter(char guess, string lines)
         {
             //stores the number fo used letters in the word
             int usedLetterCount;
 
-            //loop through the AI's current word family
-            for (int i = 0; i < CurrentWordFamily.Count; i++)
+            //if it is the player first guess, don't remove any words
+            if (GetAmountOfGuessedLetters(lines) != 0)
             {
-                //set the used letter count to 0 for each word
-                usedLetterCount = 0;
-
-                //loop through the player's used letters 
-                for (int j = 0; j < CurrentWordFamily[i].Length; j++)
+                //loop through the AI's current word family
+                for (int i = 0; i < CurrentWordFamily.Count; i++)
                 {
-                    //if the current word being checked contains the guessed letter
-                    if (CurrentWordFamily[i].Substring(j, 1) == guess.ToString())
+                    //set the used letter count to 0 for each word
+                    usedLetterCount = 0;
+
+                    //loop through the player's used letters 
+                    for (int j = 0; j < CurrentWordFamily[i].Length; j++)
                     {
-                        //increment the counter
-                        usedLetterCount++;
+                        //if the current word being checked contains the guessed letter
+                        if (CurrentWordFamily[i].Substring(j, 1) == guess.ToString())
+                        {
+                            //increment the counter
+                            usedLetterCount++;
+                        }
                     }
-                }
 
-                //if there is more then 1 used letter in that word, remove it - it will break the game 
-                if (usedLetterCount  >= 2)
-                {
-                    //remove the word from the family
-                    CurrentWordFamily.RemoveAt(i);
+                    //if there is more then 1 used letter in that word, remove it - it will break the game 
+                    if (usedLetterCount >= 2)
+                    {
+                        //to make it harder for the player to guess, the word will never have repeating letters
+                        if (ChosenWord.ToString() == CurrentWordFamily[i])
+                        {
+                            ChosenWord.Clear();
+                            ChosenWord.Append(CurrentWordFamily[1]);
+                        }
+
+                        //testing
+                        Console.WriteLine("REMOVED " + CurrentWordFamily[i]);
+
+                        //remove the word from the family
+                        CurrentWordFamily.RemoveAt(i);
+                    }
                 }
             }
         }

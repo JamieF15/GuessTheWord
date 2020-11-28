@@ -279,7 +279,7 @@ namespace GuessTheWord
             player.GuessesLeft = PromptUserForNumberOfGuesses();
 
             //create the first word for the AI
-            AI.CreateFirstWordFamily(WordManagement.AllWords, Convert.ToInt32(WordManagement.WordLength));
+            AI.GetAllWordsOfOneLength(WordManagement.AllWords, Convert.ToInt32(WordManagement.WordLength));
 
             //prompt the user if they want to see how many words are in the AI's initial word family
             PromptUserForTotalOfWordsInList();
@@ -302,6 +302,8 @@ namespace GuessTheWord
                 //read the guess from the user
                 guess = player.MakeGuess();
 
+                //change word family (cheat) here and then the chosen word based on the family chosen 
+
                 //the guess if correct if the chosen word contains the guessed letter
                 if (AI.ChosenWord.ToString().Contains(guess))
                 {
@@ -314,8 +316,7 @@ namespace GuessTheWord
                     //add the guess to used letters
                     player.UsedLetters.Add(Convert.ToChar(guess));
 
-                    AI.RemoveWordWithUsedLetter(player, Convert.ToChar(guess));
-
+                    AI.RemoveWordWithUsedLetter(Convert.ToChar(guess), lines.ToString());
 
                     //loop through the lines stringbuilder
                     for (int i = 0; i < lines.Length; i++)
