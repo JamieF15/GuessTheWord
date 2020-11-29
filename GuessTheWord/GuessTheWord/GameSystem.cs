@@ -87,7 +87,7 @@ namespace GuessTheWord
         }
 
         /// <summary>
-        /// 
+        /// Prompts the user if they want to play again when the game ends
         /// </summary>
         void PromptUserToPlayAgain()
         {
@@ -302,7 +302,8 @@ namespace GuessTheWord
                 //read the guess from the user
                 guess = player.MakeGuess();
 
-                //change word family (cheat) here and then the chosen word based on the family chosen 
+                //right after each guess, the AI creates a new word family - this is the 'cheating' aspect of the gmae
+                AI.AddWordsToNewFamily(guess, lines.ToString());
 
                 //the guess if correct if the chosen word contains the guessed letter
                 if (AI.ChosenWord.ToString().Contains(guess))
@@ -351,9 +352,6 @@ namespace GuessTheWord
                             }
                         }
                     }
-
-                    //after each correct guess, the AI creates a new word family
-                    AI.CreateNewWordFamily(lines.ToString());
 
                     //removes all invald word from the family
                     AI.RemoveWordFromFamily(player);

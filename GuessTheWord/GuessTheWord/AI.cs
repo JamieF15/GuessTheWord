@@ -14,6 +14,8 @@ namespace GuessTheWord
     {
         #region Properties
         public StringBuilder ChosenWord = new StringBuilder();
+        public StringBuilder subjectWordFamily = new StringBuilder();
+
         public List<string> CurrentWordFamily = new List<string>();
         #endregion
 
@@ -44,21 +46,6 @@ namespace GuessTheWord
                 ]);
         }
 
-        List<string> FindAllWordFamilies(char guess)
-        {
-            List<string> AllWordsWithGuessIn = new List<string>();
-
-            for (int i = 0; i < CurrentWordFamily.Count; i++)
-            {
-                if (CurrentWordFamily[i].ToString().Contains(guess))
-                {
-                    AllWordsWithGuessIn.Add(CurrentWordFamily[i]);
-                }
-            }
-
-            return AllWordsWithGuessIn;
-        }
-
         void CountVowels(List<string> allWordFamilies)
         {
             int vowelCount = 0;
@@ -77,66 +64,6 @@ namespace GuessTheWord
                     }
                 }
 
-            }
-        }
-
-
-        int GetAmountOfCorrectLettersInWord(string lines, string arrayElement)
-        {
-            int num = 0;
-
-            for (int i = 0; i < arrayElement.Length; i++)
-            {
-                if (arrayElement.Substring(i, 1) == lines.Substring(i, 1))
-                {
-                    num++;
-                }
-            }
-
-            return num;
-        }
-
-        /// <summary>
-        /// based on the number of vowels each each word family, the amount the guessed letter appears in the word family
-        /// </summary>
-        /// <param name="guess"></param>
-        void QueryWordList(char guess, string revealedWord)
-        {
-            string[] familyA = System.IO.File.ReadAllLines(@"C:\Users\User\Documents\Code For Github\GuessTheWord\GuessTheWord\familya");
-            string[] familyB = System.IO.File.ReadAllLines(@"C:\Users\User\Documents\Code For Github\GuessTheWord\GuessTheWord\familyb");
-
-            int numberOfSubjectLetter = 0;
-
-            for (int i = 0; i < CurrentWordFamily.Count; i++)
-            {
-                for (int j = 0; j < WordManagement.WordLength.Length; j++)
-                {
-                    if (CurrentWordFamily[i].Substring(j, 1) == revealedWord.Substring(j, 1))
-                    {
-                        numberOfSubjectLetter++;
-
-                        for (int k = numberOfSubjectLetter; k < CurrentWordFamily.Count; k++)
-                        {
-                            if (k == 1)
-                            {
-                                familyA.Append(CurrentWordFamily[i]);
-                            }
-                        }
-
-                    }
-                }
-            }
-
-            for (int i = 0; i < CurrentWordFamily.Count; i++)
-            {
-
-                for (int j = 0; j < WordManagement.WordLength.Length; j++)
-                {
-                    var family = from word in CurrentWordFamily
-                                 where GetAmountOfCorrectLettersInWord(revealedWord, CurrentWordFamily[i]) == j
-                                 orderby word ascending
-                                 select word;
-                }
             }
         }
 
@@ -300,19 +227,100 @@ namespace GuessTheWord
         }
 
         /// <summary>
-        /// Creates a new word family based on the revealed letters in lines string builder and the expected number of revealed letters 
+        /// Gets all the words that do NOT contians the guess, which is a valid word family
         /// </summary>
-        /// <param name="lines">The partially revealed word</param>
-        public void CreateNewWordFamily(string lines)
+        /// <param name="guess"></param>
+        List<string> GetNoMatchList(char guess)
         {
-            //create a new list to store words in
+            List<string> noMatchList = new List<string>();
+            for (int i = 0; i < CurrentWordFamily.Count; i++)
+            {
+                if (!CurrentWordFamily[i].Contains(guess))
+                {
+                    noMatchList.Add(CurrentWordFamily[i]);
+                }
+            }
+
+            return noMatchList;
+        }
+
+        void checkWhatwordsAreInFamily()
+        {
+
+
+        }
+
+        public void AddWordsToNewFamily(string guess, string lines)
+        {
+            //word =    blow
+            //word =    blob
+            //family =  **o*
+            int amountExpected = 0;
+            int amountFound = 0;
+
             List<string> newWordFamily = new List<string>();
 
+            CreateNewWordFamilyPositions(guess, lines);
+
+            for (int i = 0; i < subjectWordFamily.Length; i++)
+            {
+                if (subjectWordFamily[i].ToString() != "*")
+                {
+                    amountExpected++;
+                }
+            }
+
+            for (int i = 0; i < CurrentWordFamily.Count; i++)
+            {
+                for (int j = 0; j < WordManagement.WordLength.Length; j++)
+                {
+                    if (CurrentWordFamily[i].Substring(j, 1) == subjectWordFamily[j].ToString() && subjectWordFamily[j].ToString() != "*")
+                    {
+                        amountFound++;
+
+                        if (amountFound == amountExpected)
+                        {
+                            newWordFamily.Add(CurrentWordFamily[i]);
+                        }
+                    }
+                }
+            }
+
+            subjectWordFamily.Clear();
+        }
+
+        public void CreateNewWordFamilyPositions(string guess, string lines)
+        {
+            StringBuilder subjectWordFamily = new StringBuilder();
+
+            //create a visulisation of hte word subject word family 
+            for (int i = 0; i < lines.Length; i++)
+            {
+                subjectWordFamily.Append("*");
+            }
+
+            //get the highest number of the occuring guess
+            for (int i = 0; i < CurrentWordFamily.Count; i++)
+            {
+                if (CurrentWordFamily[i].Contains(guess))
+                {
+                    for (int j = 0; j < WordManagement.WordLength.Length; j++)
+                    {
+                        if (CurrentWordFamily[i].Substring(j, 1) == guess.ToString())
+                        {
+                            subjectWordFamily.Insert(j, guess);
+                        }
+                    }
+                }
+            }
+        }
+
+
+        #region Delete Potentially
+        public int GetRevealedLetters(string lines)
+        {
             //stores the amount of revealed letters in the lines stringbuilder
             int revealedLetters = 0;
-
-            //stores the amount of revealed letters in the chosen word
-            int revealedLettersInWord;
 
             //loop through the 'lines' stringbuilder and check how many letters each word needs to have revealed 
             for (int i = 0; i < lines.Length; i++)
@@ -325,38 +333,55 @@ namespace GuessTheWord
                 }
             }
 
-            //loop through the list of words in the family
-            for (int i = 0; i < CurrentWordFamily.Count; i++)
-            {
-                //reset the amount of letters that are revealed in a word for each iteration 
-                revealedLettersInWord = 0;
-
-                //loop through each individual word
-                for (int j = 0; j < CurrentWordFamily[i].Length; j++)
-                {
-                    //check if each letter of each word is equal to each revealed letter of the lines string builder
-                    if (CurrentWordFamily[i].Substring(j, 1) == lines.ToString().Substring(j, 1) && lines.ToString().Substring(j, 1) != "-")
-                    {
-                        /*for each letter being looped through, increment the revealed letters in word counter 
-                        for each letter and position is has in common with the 'lines' stringbuilder*/
-                        revealedLettersInWord++;
-
-                        //if the revealed letters in the word is the same as the expected amount 
-                        if (revealedLettersInWord == revealedLetters)
-                        {
-                            //add the word to the new word family
-                            newWordFamily.Add(CurrentWordFamily[i]);
-                        }
-                    }
-                }
-            }
-
-            //clear the current word family
-            CurrentWordFamily.Clear();
-
-            //add the new word family to the empty current word family 
-            CurrentWordFamily.AddRange(newWordFamily);
+            return revealedLetters;
         }
+
+        /// <summary>
+        /// Creates a new word family based on the revealed letters in lines string builder and the expected number of revealed letters 
+        /// </summary>
+        /// <param name="lines">The partially revealed word</param>
+        //public void CreateNewWordFamily(string lines)
+        //{
+        //    //create a new list to store words in and compare to the current one
+        //    List<string> newWordFamily = new List<string>();
+
+        //    //stores the amount of revealed letters in the chosen word
+        //    int revealedLettersInWord;
+
+        //    //loop through the list of words in the family
+        //    for (int i = 0; i < CurrentWordFamily.Count; i++)
+        //    {
+        //        //reset the amount of letters that are revealed in a word for each iteration 
+        //        revealedLettersInWord = 0;
+
+        //        //loop through each individual word
+        //        for (int j = 0; j < CurrentWordFamily[i].Length; j++)
+        //        {
+        //            //check if each letter of each word is equal to each revealed letter of the lines string builder
+        //            if (CurrentWordFamily[i].Substring(j, 1) == lines.ToString().Substring(j, 1) && lines.ToString().Substring(j, 1) != "-")
+        //            {
+        //                /*for each letter being looped through, increment the revealed letters in word counter 
+        //                for each letter and position is has in common with the 'lines' stringbuilder*/
+        //                revealedLettersInWord++;
+
+        //                //if the revealed letters in the word is the same as the expected amount 
+        //                if (revealedLettersInWord == GetRevealedLetters(lines))
+        //                {
+        //                    //add the word to the new word family
+        //                    newWordFamily.Add(CurrentWordFamily[i]);
+        //                }
+        //            }
+        //        }
+        //    }
+
+        //    //clear the current word family
+        //    CurrentWordFamily.Clear();
+
+        //    //add the new word family to the empty current word family 
+        //    CurrentWordFamily.AddRange(newWordFamily);
+        //}
+        #endregion
+
         #endregion
     }
 }
