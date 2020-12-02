@@ -303,7 +303,9 @@ namespace GuessTheWord
                 guess = player.MakeGuess();
 
                 //right after each guess, the AI creates a new word family - this is the 'cheating' aspect of the gmae
-                AI.AddWordsToNewFamily(guess, lines.ToString());
+                // AI.AddWordsToNewFamily(Convert.ToChar(guess), lines.ToString());
+
+                AI.CreateNewWordFamily(Convert.ToChar(guess), lines.ToString());
 
                 //the guess if correct if the chosen word contains the guessed letter
                 if (AI.ChosenWord.ToString().Contains(guess))
