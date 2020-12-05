@@ -319,7 +319,8 @@ namespace GuessTheWord
                     //add the guess to used letters
                     player.UsedLetters.Add(Convert.ToChar(guess));
 
-                    AI.RemoveWordWithUsedLetter(Convert.ToChar(guess), lines.ToString());
+                    //consider removing
+                   // AI.RemoveWordWithUsedLetter(Convert.ToChar(guess), lines.ToString());
 
                     //loop through the lines stringbuilder
                     for (int i = 0; i < lines.Length; i++)

@@ -273,9 +273,20 @@ namespace GuessTheWord
             {
                 usedWordFamilies.Add(subjectWordFamily.ToString());
                 lastWordFamily = subjectWordFamily;
+
+                for (int i = 0; i < subjectWordFamily.Length; i++)
+                {
+                    subjectWordFamily[i] = '-';
+                }
             }
         }
 
+        /// <summary>
+        /// Checks if a particualr word family has been used before
+        /// </summary>
+        /// <param name="usedWordFamilies">A list containg used word familes</param>
+        /// <param name="subjectWordFamily">The current word family</param>
+        /// <returns></returns>
         public bool CheckIfFamilyHasBeenUsed(List<string> usedWordFamilies, StringBuilder subjectWordFamily)
         {
             bool familyHasBeenUsed = false;
@@ -291,7 +302,11 @@ namespace GuessTheWord
             return familyHasBeenUsed;
         }
 
-
+        /// <summary>
+        /// Creates a new word family based on the inputted guess
+        /// </summary>
+        /// <param name="guess">The inputted guess from the user</param>
+        /// <param name="lines">The parially revealed word</param>
         public void CreateNewWordFamily(char guess, string lines)
         {
             List<string> newWordFamily = new List<string>();
@@ -304,16 +319,20 @@ namespace GuessTheWord
             //get the highest number of the occuring guess
             for (int i = 0; i < CurrentWordFamily.Count; i++)
             {
+                //if the current word family element has the guess in it, loop through it
                 if (CurrentWordFamily[i].Contains(guess))
                 {
+                    //loop through each letter of the word
                     for (int j = 0; j < CurrentWordFamily[i].Length; j++)
                     {
+                        //if the word's letter is equal to the guess, make a word family out of it
                         if (CurrentWordFamily[i].Substring(j, 1) == guess.ToString() && subjectWordFamily[j] == '-') //breakpoint here
                         {
+                            //if the element in the family is not already equal to the guess, make it so
                             if (subjectWordFamily[j] != guess)
                             {
-                                subjectWordFamily.Insert(j, guess);
-                                subjectWordFamily.Remove(subjectWordFamily.Length - 1, 1);
+                                subjectWordFamily[j] = guess;
+                                //subjectWordFamily.Remove(subjectWordFamily.Length - 1, 1);
                             }
                         }
                     }
@@ -322,8 +341,48 @@ namespace GuessTheWord
                 //add words to list here 
                 if (subjectWordFamily != lastWordFamily && CheckIfFamilyHasBeenUsed(usedWordFamilies, subjectWordFamily) == false)
                 {
-                    AddWordsToNewFamily(subjectWordFamily, newWordFamily);
+                    //add the word to the new family
+                    AddWordToNewFamily(subjectWordFamily, newWordFamily, guess);
+
+                    //reset the word families
                     SetWordFamilies(lastWordFamily, subjectWordFamily, lines);
+                }
+            }
+        }
+
+        /// <summary>
+        /// Choose between the potential word lists
+        /// </summary>
+        /// <param name="currentWordFamily"></param>
+        /// <param name="newWordFamily"></param>
+        /// <param name="guess"></param>
+        void ChooseBestWordFamily(List<string> currentWordFamily, List<string> newWordFamily, List<string> noMatchWordFamily)
+        {
+            //newWordFamily is bigger
+            if (currentWordFamily.Count < newWordFamily.Count)
+            {
+                //noMatchFamily is bigger 
+                if (newWordFamily.Count < noMatchWordFamily.Count)
+                {
+                    CurrentWordFamily.Clear();
+                    CurrentWordFamily.AddRange(noMatchWordFamily);
+                }
+                //newWordFamily is bigger
+                else
+                {
+                    CurrentWordFamily.Clear();
+                    CurrentWordFamily.AddRange(newWordFamily);
+                }
+           
+            }
+            //family 1 is bigger
+            else
+            {
+                //no match list is bigger
+                if (currentWordFamily.Count < noMatchWordFamily.Count)
+                {
+                    CurrentWordFamily.Clear();
+                    CurrentWordFamily.AddRange(noMatchWordFamily);
                 }
             }
         }
@@ -333,28 +392,38 @@ namespace GuessTheWord
         /// </summary>
         /// <param name="wordFamily">The letters that are being checked against, e.g. f---</param>
         /// <param name="newWordFamilyList">The list the new words are being added to</param>
-        void AddWordsToNewFamily(StringBuilder wordFamily, List<string> newWordFamilyList)
+        void AddWordToNewFamily(StringBuilder wordFamily, List<string> newWordFamilyList, char guess)
         {
             //the matching letter in each word of the word family
             int matchingLetters;
 
+            //loop through the current word family
             for (int i = 0; i < CurrentWordFamily.Count; i++)
             {
+                //set the matching letters for 0
                 matchingLetters = 0;
 
+                //loop through each word in the word family
                 for (int j = 0; j < CurrentWordFamily[i].Length; j++)
                 {
+                    //loop through each letter in each word of the word family and check each one that matches the word family letter and position
                     if (CurrentWordFamily[i].Substring(j, 1) == wordFamily[j].ToString())
                     {
+                        //increment the matching letters count
                         matchingLetters++;
 
+                        //if the matching letters are equal to the amount in the word family, add it to the new family list
                         if (matchingLetters == GetLettersInWordFamily(wordFamily))
                         {
+                            CurrentWordFamily.RemoveAt(i);
                             newWordFamilyList.Add(CurrentWordFamily[i]);
                         }
                     }
                 }
             }
+
+            //when all the words are added to the word family list, pick the best list 
+            ChooseBestWordFamily(newWordFamilyList, CurrentWordFamily, GetNoMatchList(guess));
         }
 
         /// <summary>
@@ -364,10 +433,13 @@ namespace GuessTheWord
         /// <returns></returns>
         int GetLettersInWordFamily(StringBuilder wordFamily)
         {
+            //the number of letter that are not '-' in the family
             int lettersInWordFamily = 0;
 
+            //loop through the word family
             for (int i = 0; i < subjectWordFamily.Length; i++)
             {
+                //for each letter thats not '-', increment the counter
                 if (subjectWordFamily[i] != '-')
                 {
                     lettersInWordFamily++;
