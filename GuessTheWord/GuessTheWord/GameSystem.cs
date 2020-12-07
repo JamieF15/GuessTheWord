@@ -17,7 +17,6 @@ namespace GuessTheWord
         #endregion
 
         #region Methods
-
         /// <summary>
         /// Resets the data structures of the player and AI
         /// </summary>
@@ -32,8 +31,9 @@ namespace GuessTheWord
             lines.Clear();
 
             //clear the AI's data structures
-            AI.ChosenWord.Clear();
-            AI.CurrentWordFamily.Clear();
+            AI.subjectWordFamily.Clear();
+            AI.allWordsOfGivenLength.Clear();
+            AI.SetWordFamilies(AI.lastWordFamily, AI.subjectWordFamily, lines.ToString());
         }
 
         /// <summary>
@@ -60,14 +60,14 @@ namespace GuessTheWord
                 if (input.Length == 1 && input == "y" || input == "Y")
                 {
                     //check if there is only one word in the AI word list for appropriate grammar to be printed
-                    if (AI.CurrentWordFamily.Count == 1)
+                    if (AI.allWordsOfGivenLength.Count == 1)
                     {
-                        Console.WriteLine("There is " + AI.CurrentWordFamily.Count + " word to guess from.");
+                        Console.WriteLine("There is " + AI.allWordsOfGivenLength.Count + " word to guess from.");
                     }
                     //check if the length is greater than 1 in order for correct grammer to be shown
                     else
                     {
-                        Console.WriteLine("There are " + AI.CurrentWordFamily.Count + " words to guess from.");
+                        Console.WriteLine("There are " + AI.allWordsOfGivenLength.Count + " words to guess from.");
                     }
 
                     //stop the loop
@@ -247,7 +247,7 @@ namespace GuessTheWord
             if (dashCount == 0)
             {
                 //print that the user has guessed the word
-                Console.WriteLine("You guessed the word! It was " + "'" + AI.ChosenWord + "'.");
+                Console.WriteLine("You guessed the word! It was " + "'" + AI.currentWordFamily[0] + "'");
                 PromptUserToPlayAgain();
                 Console.ReadKey();
                 playerWin = true;
@@ -285,11 +285,13 @@ namespace GuessTheWord
             PromptUserForTotalOfWordsInList();
 
             //set the appropriate number of dashes to the stringbuilder
-            lines.Append(WordManagement.BlankOutWord(AI.ChosenWord.Length));
+            lines.Append(WordManagement.BlankOutWord(Convert.ToInt32(WordManagement.WordLength)));
 
             //loop until gameOver is true
             while (!gameOver)
             {
+                Console.WriteLine("Words in Family: " + AI.currentWordFamily.Count);
+
                 //write the number of guesses the player has left
                 Console.WriteLine("Guesses left: " + player.GuessesLeft);
 
@@ -302,13 +304,10 @@ namespace GuessTheWord
                 //read the guess from the user
                 guess = player.MakeGuess();
 
-                //right after each guess, the AI creates a new word family - this is the 'cheating' aspect of the gmae
-                // AI.AddWordsToNewFamily(Convert.ToChar(guess), lines.ToString());
-
                 AI.CreateNewWordFamily(Convert.ToChar(guess), lines.ToString());
 
                 //the guess if correct if the chosen word contains the guessed letter
-                if (AI.ChosenWord.ToString().Contains(guess))
+                if (AI.chosenWordFamily.ToString().Contains(guess))
                 {
                     //write to the console that the guess was correct
                     Console.WriteLine("Guess Correct! :)\n");
@@ -319,33 +318,13 @@ namespace GuessTheWord
                     //add the guess to used letters
                     player.UsedLetters.Add(Convert.ToChar(guess));
 
-                    //consider removing
-                   // AI.RemoveWordWithUsedLetter(Convert.ToChar(guess), lines.ToString());
-
                     //loop through the lines stringbuilder
                     for (int i = 0; i < lines.Length; i++)
                     {
                         //for each letter of the chosen word, check if it is equal to the guess
-                        if (AI.ChosenWord[i] == Convert.ToChar(guess))
+                        if (AI.chosenWordFamily[i] == Convert.ToChar(guess))
                         {
-                            /*set the appropriate element of the lines of the stringbuilder to the 
-                            character of the corresponding chosen word*/
-
-                            //check if the amount of guessed letters is equal to the lenght of the word -1 (one letter left to guess)
-                            if (AI.GetAmountOfGuessedLetters(lines.ToString()) != AI.ChosenWord.Length - 1 || AI.CurrentWordFamily.Count == 1)
-                            {
-                                //if there is only one word left in the word family, do not change it.
-                                lines[i] = AI.ChosenWord[i];
-                            }
-                            else
-                            {
-                                //if there is more than 1 word in the AI's current word family and there is only 1 letter left to guess
-                                if (!AI.CheckIfNextWordHasIncorrectLetters(player))
-                                {
-                                    //change the word
-                                    AI.ChangeChosenWordWithOneLetterLeft(lines.ToString());
-                                }
-                            }
+                             lines[i] = AI.chosenWordFamily[i];
 
                             //then check if the player has won (when there are no dashes left in the string builder)
                             if (CheckForWinner())
@@ -356,14 +335,8 @@ namespace GuessTheWord
                         }
                     }
 
-                    //removes all invald word from the family
-                    AI.RemoveWordFromFamily(player);
-
-                    //Testing 
-                    Console.WriteLine("AI CHOSEN WORD: " + AI.ChosenWord);
-
                     //test purposes
-                    Console.WriteLine("AI new list size: " + AI.CurrentWordFamily.Count);
+                    Console.WriteLine("AI new list size: " + AI.currentWordFamily.Count);
                 }
                 //triggers when the AI's chosen word does not contain the guess
                 else
@@ -377,9 +350,6 @@ namespace GuessTheWord
                     //add the guess to the list of incorrect guesses
                     player.IncorrectLetters.Add(Convert.ToChar(guess));
 
-                    //remove the word with an incorrect letter in them from the family so they will not be changed to and lock the game
-                    AI.RemoveWordFromFamily(player);
-
                     //decrement a guess from the player
                     player.GuessesLeft--;
 
@@ -391,7 +361,7 @@ namespace GuessTheWord
                         gameOver = true;
 
                         //print that the player has lost, along with the chosen word
-                        Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.ChosenWord + "'");
+                        Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.currentWordFamily[0] + "'");
 
                         //prompt the user to replay the game
                         PromptUserToPlayAgain();

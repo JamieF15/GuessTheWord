@@ -14,7 +14,7 @@ namespace GuessTheWord
         public static string WordLength { get; set; }
 
         //reads the text file containing all of the AI's words 
-        static public List<string> AllWords = File.ReadAllLines(@"C:\Users\User\Documents\Code For Github\GuessTheWord\GuessTheWord\a.txt").ToList();
+        static public List<string> AllWords = File.ReadAllLines("a.txt").ToList();
         #endregion
 
         #region Methods

@@ -29,10 +29,13 @@ namespace GuessTheWord
         {
             //variable for the users guess
             string guess = "";
+
             //check to end the loop
             bool end = false;
+
             //checks if the letter has already been guessed
             bool usedLetter;
+
             //Loop while end is false
             while (!end)
             {
