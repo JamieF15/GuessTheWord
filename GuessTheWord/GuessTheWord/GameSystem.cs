@@ -32,7 +32,7 @@ namespace GuessTheWord
 
             //clear the AI's data structures
             AI.subjectWordFamily.Clear();
-            AI.allWordsOfGivenLength.Clear();
+            AI.currentWordFamily.Clear();
             AI.SetWordFamilies(AI.lastWordFamily, AI.subjectWordFamily, lines.ToString());
         }
 
@@ -60,14 +60,14 @@ namespace GuessTheWord
                 if (input.Length == 1 && input == "y" || input == "Y")
                 {
                     //check if there is only one word in the AI word list for appropriate grammar to be printed
-                    if (AI.allWordsOfGivenLength.Count == 1)
+                    if (AI.currentWordFamily.Count == 1)
                     {
-                        Console.WriteLine("There is " + AI.allWordsOfGivenLength.Count + " word to guess from.");
+                        Console.WriteLine("There is " + AI.currentWordFamily.Count + " word to guess from.");
                     }
                     //check if the length is greater than 1 in order for correct grammer to be shown
                     else
                     {
-                        Console.WriteLine("There are " + AI.allWordsOfGivenLength.Count + " words to guess from.");
+                        Console.WriteLine("There are " + AI.currentWordFamily.Count + " words to guess from.");
                     }
 
                     //stop the loop
@@ -357,11 +357,12 @@ namespace GuessTheWord
                     console that the game is over */
                     if (player.GuessesLeft == 0)
                     {
+                        Random rng = new Random();
                         //set gameover to true to stop the game
                         gameOver = true;
 
                         //print that the player has lost, along with the chosen word
-                        Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.currentWordFamily[0] + "'");
+                        Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.currentWordFamily[rng.Next(0, AI.chosenWordFamily.Length)] + "'");
 
                         //prompt the user to replay the game
                         PromptUserToPlayAgain();
