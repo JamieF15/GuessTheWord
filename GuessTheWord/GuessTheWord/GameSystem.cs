@@ -33,7 +33,15 @@ namespace GuessTheWord
             //clear the AI's data structures
             AI.subjectWordFamily.Clear();
             AI.currentWordFamily.Clear();
-            AI.SetWordFamilies(AI.lastWordFamily, AI.subjectWordFamily, lines.ToString());
+
+            for (int i = 0; i < WordManagement.WordLength.Length; i++)
+            {
+                AI.subjectWordFamily.Append('-');
+                AI.lastWordFamily.Append('-');
+                AI.chosenWordFamily.Append('-');
+            }
+
+            AI.SetWordFamilies(AI.subjectWordFamily, lines.ToString());
         }
 
         /// <summary>
@@ -73,6 +81,7 @@ namespace GuessTheWord
                     //stop the loop
                     stop = true;
                 }
+
                 //if the input is 1 and is 'n' or 'N', this happens
                 else if (input.Length == 1 && input == "n" || input == "N")
                 {
@@ -224,7 +233,7 @@ namespace GuessTheWord
         /// Checks if the player has won based on the blanked out word
         /// </summary>
         /// <returns>Returns a bool that states if the player has won</returns>
-        bool CheckForWinner()
+        bool CheckForWin()
         {
             //checks if the player has won
             bool playerWin;
@@ -327,17 +336,15 @@ namespace GuessTheWord
                              lines[i] = AI.chosenWordFamily[i];
 
                             //then check if the player has won (when there are no dashes left in the string builder)
-                            if (CheckForWinner())
+                            if (CheckForWin())
                             {
                                 //set the game to 'over'
                                 gameOver = true;
                             }
                         }
                     }
-
-                    //test purposes
-                    Console.WriteLine("AI new list size: " + AI.currentWordFamily.Count);
                 }
+
                 //triggers when the AI's chosen word does not contain the guess
                 else
                 {
@@ -362,7 +369,9 @@ namespace GuessTheWord
                         gameOver = true;
 
                         //print that the player has lost, along with the chosen word
-                        Console.WriteLine("GAME OVER! You ran out of guesses." + " The word was: " + "'" + AI.currentWordFamily[rng.Next(0, AI.chosenWordFamily.Length)] + "'");
+                        Console.WriteLine("GAME OVER! You ran out of guesses." + 
+                                          " The word was: " + "'" + 
+                                          AI.currentWordFamily[rng.Next(0, AI.currentWordFamily.Count)] + "'");
 
                         //prompt the user to replay the game
                         PromptUserToPlayAgain();

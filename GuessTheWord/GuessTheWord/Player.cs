@@ -84,16 +84,19 @@ namespace GuessTheWord
                     {
                         Console.WriteLine("'" + guess + "'" + " has already been guessed.\n");
                     }
+
                     //if the guess is empty, prompt the user that is the case
                     else if (guess.Length == 0)
                     {
                         Console.WriteLine("Guess is empty.\n");
                     }
+
                     //if the letter is not in the alphabet, prompt the user that is the case
                     else if (!alphabetCheck)
                     {
                         Console.WriteLine("Guess not a valid character.\n");
                     }
+
                     //if the letter longer than one character, prompt the user that is the case
                     else if (guess.Length > 1)
                     {

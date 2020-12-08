@@ -17,9 +17,9 @@ namespace GuessTheWord
         public StringBuilder lastWordFamily = new StringBuilder();
         public StringBuilder chosenWordFamily = new StringBuilder();
 
-        //   public List<string> allWordsOfGivenLength = new List<string>();
         public List<string> usedWordFamilies = new List<string>();
         public List<string> currentWordFamily = new List<string>();
+        public List<string> bestWordFamily = new List<string>();
         #endregion
 
         #region Methods
@@ -69,8 +69,9 @@ namespace GuessTheWord
             return noMatchList;
         }
 
-        public void SetWordFamilies(StringBuilder lastWordFamily, StringBuilder subjectWordFamily, string lines)
+        public void SetWordFamilies(StringBuilder subjectWordFamily, string lines)
         {
+
             //if they are both empty, set them as all dashes
             if (lastWordFamily.Length == 0 && subjectWordFamily.Length == 0)
             {
@@ -82,10 +83,9 @@ namespace GuessTheWord
             }
 
             //if they are different, set the last one to the subject one
-            else if (lastWordFamily != subjectWordFamily)
+            if (lastWordFamily != subjectWordFamily)
             {
-                lastWordFamily.Clear();
-                lastWordFamily.Append(subjectWordFamily);
+               // chosenWordFamily = lastWordFamily;
             }
         }
 
@@ -110,20 +110,25 @@ namespace GuessTheWord
             return familyHasBeenUsed;
         }
 
-        void RemoveWordsThatAreNotInChosenFamily(List<string> currentWordFamily, List<string> allWordsOfGivenLength)
+        void SetSubjectWordFamily(char guess, int wordFamilySize)
         {
-            for (int i = 0; i < allWordsOfGivenLength.Count; i++)
+
+            for (int i = 0; i < currentWordFamily.Count; i++)
             {
-                for (int j = 0; j < currentWordFamily.Count; j++)
+                int matchingLetters = 0;
+
+                for (int j = 0; j < currentWordFamily[i].Length; j++)
                 {
-                    if (allWordsOfGivenLength.Count > 0 && currentWordFamily.Count > 0)
+                    if (currentWordFamily[i].Substring(j, 1) == guess.ToString())
                     {
-                        if (allWordsOfGivenLength[i] != currentWordFamily[j])
-                        {
-                            allWordsOfGivenLength.RemoveAt(i);
-                        }
+                        matchingLetters++;
                     }
 
+                    if (matchingLetters == wordFamilySize)
+                    {
+                        subjectWordFamily[j] = guess;
+                        break;
+                    }
                 }
             }
         }
@@ -137,13 +142,15 @@ namespace GuessTheWord
         {
             List<string> newWordFamily = new List<string>();
 
-            int WordFamilySizeToCreate = 0;
+            int WordFamilySizeToCreate = 1;
 
             //create a visulisation of the word subject word family 
-            SetWordFamilies(lastWordFamily, subjectWordFamily, lines);
+            SetWordFamilies(subjectWordFamily, lines);
 
             while (WordFamilySizeToCreate != Convert.ToInt32(WordManagement.WordLength))
             {
+                SetSubjectWordFamily(guess, WordFamilySizeToCreate);
+
                 WordFamilySizeToCreate++;
 
                 //get the highest number of the occuring guess
@@ -156,27 +163,27 @@ namespace GuessTheWord
                         for (int j = 0; j < currentWordFamily[i].Length; j++)
                         {
                             //if the word's letter is equal to the guess, make a word family out of it
-                            if (currentWordFamily[i].Substring(j, 1) == guess.ToString() && subjectWordFamily[j] == '-') //breakpoint here
+                            if (currentWordFamily[i].Substring(j, 1) == subjectWordFamily.ToString().Substring(j, 1))
                             {
-                                //if the element in the family is not already equal to the guess, make it so
-                                if (subjectWordFamily[j] != guess)
+                                //add words to list here THIS CHECK COULD BE BREAKING IT
+                                if (subjectWordFamily != lastWordFamily && CheckIfFamilyHasBeenUsed(usedWordFamilies, subjectWordFamily) == false)
                                 {
-                                    subjectWordFamily[j] = guess;
-
-                                    //add words to list here 
-                                    if (subjectWordFamily != lastWordFamily && CheckIfFamilyHasBeenUsed(usedWordFamilies, subjectWordFamily) == false)
-                                    {
-                                        //add the word to the new family
-                                        AddWordToNewFamily(subjectWordFamily, newWordFamily, guess);
-                                        usedWordFamilies.Add(subjectWordFamily.ToString());
-                                        break;
-                                    }
+                                    //add the word to the new family
+                                    AddWordToNewFamily(subjectWordFamily, newWordFamily, guess);
+                                    usedWordFamilies.Add(subjectWordFamily.ToString());
+                                    break;
                                 }
                             }
                         }
                     }
                 }
+                currentWordFamily.Clear();
+                currentWordFamily.AddRange(bestWordFamily);
+                chosenWordFamily = subjectWordFamily;
+                bestWordFamily.Clear();
+
             }
+
         }
 
         /// <summary>
@@ -187,27 +194,40 @@ namespace GuessTheWord
         /// <param name="guess"></param>
         void ChooseBestWordFamily(List<string> currentWordFamily, List<string> newWordFamily, List<string> noMatchWordFamily)
         {
+            //do not reveal letter
             //check if the list with no matches is greater than the new one, it it is, choose the no match family
-            if (noMatchWordFamily.Count > newWordFamily.Count)
+            if (noMatchWordFamily.Count >= newWordFamily.Count)
             {
-               // chosenWordFamily = lastWordFamily;
-                currentWordFamily.Clear();
-                currentWordFamily.AddRange(noMatchWordFamily);
-
-                newWordFamily.Clear();
-
-                //do not reveal letter
+                if (newWordFamily.Count > 0)//bestWordFamily.Count)
+                {
+                    bestWordFamily.Clear();
+                    bestWordFamily.AddRange(noMatchWordFamily);
+                    newWordFamily.Clear();
+                }
             }
-            else if (newWordFamily.Count > noMatchWordFamily.Count)
+            //reveal letter
+            else
             {
-                chosenWordFamily = subjectWordFamily;
-                lastWordFamily = subjectWordFamily;
-                currentWordFamily.Clear();
-                currentWordFamily.AddRange(newWordFamily);
-
-                newWordFamily.Clear();
-
-                //reveal letter
+                if (newWordFamily.Count >= currentWordFamily.Count)
+                {
+                    if (noMatchWordFamily.Count > bestWordFamily.Count)
+                    {
+                        bestWordFamily.Clear();
+                        bestWordFamily.AddRange(noMatchWordFamily);
+                        newWordFamily.Clear();
+                    }
+                    else
+                    {
+                        bestWordFamily.Clear();
+                        bestWordFamily.AddRange(newWordFamily);
+                        newWordFamily.Clear();
+                    }
+                }
+                else
+                {
+                    lastWordFamily = chosenWordFamily;
+                    newWordFamily.Clear();
+                }
             }
         }
 
