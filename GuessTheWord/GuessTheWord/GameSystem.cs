@@ -214,6 +214,7 @@ namespace GuessTheWord
             {
                 Console.WriteLine("no letters guessed.");
             }
+
             //if there are more than 0, this happens
             else
             {

@@ -76,6 +76,7 @@ namespace GuessTheWord
                     //return the guess as lower case to allow for both uppercase and lower case to be valid
                     return guess.ToLower();
                 }
+
                 //Outputs for when a letter is incorrect
                 else
                 {

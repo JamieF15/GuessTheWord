@@ -79,6 +79,7 @@ namespace GuessTheWord
                 {
                     lastWordFamily.Append("-");
                     subjectWordFamily.Append("-");
+                    chosenWordFamily.Append("-");
                 }
             }
 
@@ -112,7 +113,6 @@ namespace GuessTheWord
 
         void SetSubjectWordFamily(char guess, int wordFamilySize)
         {
-
             for (int i = 0; i < currentWordFamily.Count; i++)
             {
                 int matchingLetters = 0;
@@ -144,6 +144,8 @@ namespace GuessTheWord
 
             int WordFamilySizeToCreate = 1;
 
+            bool updateWordFamilies = false;
+
             //create a visulisation of the word subject word family 
             SetWordFamilies(subjectWordFamily, lines);
 
@@ -152,6 +154,8 @@ namespace GuessTheWord
                 SetSubjectWordFamily(guess, WordFamilySizeToCreate);
 
                 WordFamilySizeToCreate++;
+
+                updateWordFamilies = false;
 
                 //get the highest number of the occuring guess
                 for (int i = 0; i < currentWordFamily.Count; i++)
@@ -171,16 +175,29 @@ namespace GuessTheWord
                                     //add the word to the new family
                                     AddWordToNewFamily(subjectWordFamily, newWordFamily, guess);
                                     usedWordFamilies.Add(subjectWordFamily.ToString());
+                                    updateWordFamilies = true;
                                     break;
                                 }
                             }
                         }
                     }
                 }
-                currentWordFamily.Clear();
-                currentWordFamily.AddRange(bestWordFamily);
-                chosenWordFamily = subjectWordFamily;
-                bestWordFamily.Clear();
+                if (updateWordFamilies)
+                {
+                    currentWordFamily.Clear();
+                    currentWordFamily.AddRange(bestWordFamily);
+                    chosenWordFamily = subjectWordFamily;
+                    bestWordFamily.Clear();
+
+                    //new word family
+                    for (int i = 0; i < chosenWordFamily.Length; i++)
+                    {
+                        if (chosenWordFamily[i] != '-')
+                        {
+                            chosenWordFamily[i] = Convert.ToChar(currentWordFamily[0].Substring(i, 1));
+                        }
+                    }
+                }
 
             }
 
@@ -195,16 +212,20 @@ namespace GuessTheWord
         void ChooseBestWordFamily(List<string> currentWordFamily, List<string> newWordFamily, List<string> noMatchWordFamily)
         {
             //do not reveal letter
-            //check if the list with no matches is greater than the new one, it it is, choose the no match family
+            //check if the list with no matches is greater than the new one, if it is, choose the no match family
             if (noMatchWordFamily.Count >= newWordFamily.Count)
             {
-                if (newWordFamily.Count > 0)//bestWordFamily.Count)
+                if (newWordFamily.Count >= bestWordFamily.Count)
                 {
                     bestWordFamily.Clear();
                     bestWordFamily.AddRange(noMatchWordFamily);
                     newWordFamily.Clear();
+                    Console.WriteLine(bestWordFamily[0]);
+
+                  
                 }
             }
+
             //reveal letter
             else
             {
@@ -222,11 +243,6 @@ namespace GuessTheWord
                         bestWordFamily.AddRange(newWordFamily);
                         newWordFamily.Clear();
                     }
-                }
-                else
-                {
-                    lastWordFamily = chosenWordFamily;
-                    newWordFamily.Clear();
                 }
             }
         }
