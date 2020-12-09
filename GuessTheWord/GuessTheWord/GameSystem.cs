@@ -10,13 +10,19 @@ namespace GuessTheWord
     public class GameSystem
     {
         #region Objects
+
         //instantiate the relevant objects
+
         public readonly AI AI = new AI();
+
         public readonly Player player = new Player();
+
         readonly StringBuilder lines = new StringBuilder();
+
         #endregion
 
         #region Methods
+
         /// <summary>
         /// Resets the data structures of the player and AI
         /// </summary>
@@ -30,18 +36,15 @@ namespace GuessTheWord
             //clear the lines stringbuilder
             lines.Clear();
 
+            //clear the word families 
+            AI.lastWordFamily.Clear();
+            AI.subjectWordFamily.Clear();
+            AI.chosenWordFamily.Clear();
+
             //clear the AI's data structures
             AI.subjectWordFamily.Clear();
             AI.currentWordFamily.Clear();
-
-            for (int i = 0; i < WordManagement.WordLength.Length; i++)
-            {
-                AI.subjectWordFamily.Append('-');
-                AI.lastWordFamily.Append('-');
-                AI.chosenWordFamily.Append('-');
-            }
-
-            AI.SetWordFamilies(AI.subjectWordFamily, lines.ToString());
+            AI.bestWordFamily.Clear();
         }
 
         /// <summary>
@@ -72,6 +75,7 @@ namespace GuessTheWord
                     {
                         Console.WriteLine("There is " + AI.currentWordFamily.Count + " word to guess from.");
                     }
+
                     //check if the length is greater than 1 in order for correct grammer to be shown
                     else
                     {
@@ -90,8 +94,13 @@ namespace GuessTheWord
                 }
             }
 
+            //pause the program and prompt the user to start the game
             Console.WriteLine("Press any key to start!");
+
+            //read user input 
             Console.ReadKey();
+
+            //clear the console
             Console.Clear();
         }
 
@@ -130,6 +139,7 @@ namespace GuessTheWord
                     //stop the loop
                     stop = true;
                 }
+
                 //if the input is 1 and is 'n' or 'N', this happens
                 else if (input.Length == 1 && input == "n" || input == "N")
                 {
@@ -148,8 +158,13 @@ namespace GuessTheWord
                 }
             }
 
+            //prompt the user to press any key to start
             Console.WriteLine("Press any key to start!");
+
+            //read user input
             Console.ReadKey();
+
+            //clear the console
             Console.Clear();
         }
 
@@ -180,6 +195,7 @@ namespace GuessTheWord
                     //prompts user that the input was not a number
                     Console.WriteLine("Input was not a number.");
                 }
+
                 //if the input was a number, this happens
                 else
                 {
@@ -189,6 +205,7 @@ namespace GuessTheWord
                         //returns the number of guesses 
                         return Convert.ToInt32(numberOfGuesses);
                     }
+
                     //happens when the input is less than 0
                     else
                     {
@@ -197,6 +214,7 @@ namespace GuessTheWord
                     }
                 }
             }
+
             //returns the number of guesses 
             return Convert.ToInt32(numberOfGuesses);
         }
@@ -258,13 +276,20 @@ namespace GuessTheWord
             {
                 //print that the user has guessed the word
                 Console.WriteLine("You guessed the word! It was " + "'" + AI.currentWordFamily[0] + "'");
+
+                //prompt the user to play again
                 PromptUserToPlayAgain();
+
+                //read the users input
                 Console.ReadKey();
+
+                //set the player as the winner
                 playerWin = true;
             }
             //if there are any dashes, the player has not won 
             else
             {
+                //the player did not win this turn
                 playerWin = false;
             }
 
@@ -300,6 +325,7 @@ namespace GuessTheWord
             //loop until gameOver is true
             while (!gameOver)
             {
+                //for testing
                 Console.WriteLine("Words in Family: " + AI.currentWordFamily.Count);
 
                 //write the number of guesses the player has left
@@ -314,6 +340,7 @@ namespace GuessTheWord
                 //read the guess from the user
                 guess = player.MakeGuess();
 
+                //create a new word list after every guess
                 AI.CreateNewWordFamily(Convert.ToChar(guess), lines.ToString());
 
                 //the guess if correct if the chosen word contains the guessed letter
@@ -334,6 +361,7 @@ namespace GuessTheWord
                         //for each letter of the chosen word, check if it is equal to the guess
                         if (AI.chosenWordFamily[i] == Convert.ToChar(guess))
                         {
+                            //set the lines stringbuilder to the AI's chosen word family
                              lines[i] = AI.chosenWordFamily[i];
 
                             //then check if the player has won (when there are no dashes left in the string builder)
@@ -365,7 +393,9 @@ namespace GuessTheWord
                     console that the game is over */
                     if (player.GuessesLeft == 0)
                     {
+                        //rng for 'picking' a word to display 
                         Random rng = new Random();
+
                         //set gameover to true to stop the game
                         gameOver = true;
 
@@ -383,6 +413,7 @@ namespace GuessTheWord
                 }
             }
         }
+
         #endregion
     }
 }

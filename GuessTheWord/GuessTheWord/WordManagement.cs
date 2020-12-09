@@ -11,13 +11,16 @@ namespace GuessTheWord
     static public class WordManagement
     {
         #region Attributes
+
         public static string WordLength { get; set; }
 
         //reads the text file containing all of the AI's words 
-        static public List<string> AllWords = File.ReadAllLines("a.txt").ToList();
+        static public List<string> AllWords = File.ReadAllLines("dictionary.txt").ToList();
+
         #endregion
 
         #region Methods
+
         /// <summary>
         /// Prompts the user for a word length to search the AllWords list for
         /// </summary>
@@ -41,14 +44,17 @@ namespace GuessTheWord
                     //display that it was a number
                     Console.WriteLine("Input was not a number.");
                 }
+
                 //if the input was a number this happens
                 else
-                {   //checks if the length of the word is greater than 0 and words of the inputted length are in the word list
+                {   
+                    //checks if the length of the word is greater than 0 and words of the inputted length are in the word list
                     if (WordLength.Length > 0 && CheckWordList(WordLength))
                     {
                         //returns the length of the word 
                         return Convert.ToInt32(WordLength);
                     }
+
                     //if there are no words of the inputted length in the list or the input is less than 0, this happesn 
                     else
                     {
@@ -60,21 +66,6 @@ namespace GuessTheWord
 
             //return the wordlength as a integer
             return Convert.ToInt32(WordLength);
-        }
-
-        //NOT USED CURRENTLY
-        public static List<string> GiveAIWordFamily()
-        {
-            List<string> WordFamily = new List<string>();
-            
-            for (int i = 0; i < AllWords.Count; i++)
-            {
-                if (AllWords[i].Length == Convert.ToInt32(WordLength))
-                {
-                    WordFamily.Add(AllWords[i]);
-                }
-            }
-            return WordFamily;
         }
 
         /// <summary>
@@ -110,6 +101,7 @@ namespace GuessTheWord
                         //set found words to true
                         foundWords = true;
                     }
+
                     //if there are no words of the desired length
                     else
                     {
@@ -118,6 +110,7 @@ namespace GuessTheWord
                     }
                 }
             }
+
             return foundWords;
         }
 
@@ -137,6 +130,7 @@ namespace GuessTheWord
                 //adds a dash each interation
                 blankedWord.Append("-");
             }
+
             //retuns the stringbuilder as a string
             return blankedWord.ToString();
         }
