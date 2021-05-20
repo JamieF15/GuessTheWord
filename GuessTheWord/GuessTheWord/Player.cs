@@ -13,11 +13,15 @@ namespace GuessTheWord
     public class Player
     {
         #region Properties
-        public int ID { get; set; } = 1;
-        public int GuessesLeft { get; set; } = 3;
+
+        public int GuessesLeft { get; set; }
+
         public List<char> CorrectLetters = new List<char>();
+
         public List<char> UsedLetters = new List<char>();
+
         public List<char> IncorrectLetters = new List<char>();
+
         #endregion
 
         #region Methods
@@ -29,10 +33,13 @@ namespace GuessTheWord
         {
             //variable for the users guess
             string guess = "";
+
             //check to end the loop
             bool end = false;
+
             //checks if the letter has already been guessed
             bool usedLetter;
+
             //Loop while end is false
             while (!end)
             {
@@ -41,15 +48,16 @@ namespace GuessTheWord
 
                 //write to the conole a prompt
                 Console.Write("Enter a letter: ");
+
                 //read the input from the user
                 guess = Console.ReadLine();
 
                 //code refrenced from 'https://stackoverflow.com/questions/34616050/how-to-check-if-a-char-is-in-the-alphabet-in-c-sharp'
                 //check if the inputted letter is a part of the alphabet
-                bool AlphabetCheck = Regex.IsMatch(guess.ToString(), "[a-z]", RegexOptions.IgnoreCase);
+                bool alphabetCheck = Regex.IsMatch(guess.ToString(), "[a-z]", RegexOptions.IgnoreCase);
 
                 //if the input is exactly 1 and is in the alphabet, this is true
-                if (guess.Length == 1 && AlphabetCheck)
+                if (guess.Length == 1 && alphabetCheck)
                 {
                     //loop through the list of used letters 
                     for (int i = 0; i < UsedLetters.Count; i++)
@@ -59,17 +67,20 @@ namespace GuessTheWord
                         {
                             //set the letter to used
                             usedLetter = true;
+
                             //stop the loop
                             break;
                         }
                     }
                 }
+
                 //true if the guess is 1 character in length, is in the alphabet, and has not been used
-                if (guess.Length == 1 && AlphabetCheck && !usedLetter)
+                if (guess.Length == 1 && alphabetCheck && !usedLetter)
                 {
-                    //return the guess 
+                    //return the guess as lower case to allow for both uppercase and lower case to be valid
                     return guess.ToLower();
                 }
+
                 //Outputs for when a letter is incorrect
                 else
                 {
@@ -78,16 +89,19 @@ namespace GuessTheWord
                     {
                         Console.WriteLine("'" + guess + "'" + " has already been guessed.\n");
                     }
+
                     //if the guess is empty, prompt the user that is the case
                     else if (guess.Length == 0)
                     {
                         Console.WriteLine("Guess is empty.\n");
                     }
+
                     //if the letter is not in the alphabet, prompt the user that is the case
-                    else if (!AlphabetCheck)
+                    else if (!alphabetCheck)
                     {
                         Console.WriteLine("Guess not a valid character.\n");
                     }
+
                     //if the letter longer than one character, prompt the user that is the case
                     else if (guess.Length > 1)
                     {
